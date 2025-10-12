@@ -15,7 +15,6 @@ import {
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { Formik, Form, Field } from "formik";
-import { useLogin } from "@/hooks/auth-hook.hook";
 import { requestAccessSchema } from "@/schema/auth-schema";
 
 const RequestAccess = () => {
@@ -64,6 +63,7 @@ const RequestAccess = () => {
                             try {
                                 setErrorObject({});
                                 setLoading(true);
+                                console.log(values)
                                 // const response = await useLogin({ data: { ...values, phone } });
 
                                 // console.log(response?.data);
@@ -174,7 +174,7 @@ const RequestAccess = () => {
                                                 style={{
                                                     width: "100%",
                                                     alignItems: "center",
-                                                    borderTopRightRadius : 0,
+                                                    borderTopRightRadius: 0,
                                                     borderBottomLeftRadius: 10,
                                                     borderBottomRightRadius: 10,
                                                 }}
@@ -183,14 +183,14 @@ const RequestAccess = () => {
                                                     buttonStyle: {
                                                         padding: 20,
                                                         borderTop: "none",
-                                                        borderTopRightRadius : 0,
+                                                        borderTopRightRadius: 0,
                                                         borderBottomLeftRadius: 15
                                                     }
                                                 }}
                                                 inputClassName="w-full py-6"
                                                 inputStyle={{
                                                     padding: "20px 10px",
-                                                    borderTopRightRadius : 0,
+                                                    borderTopRightRadius: 0,
                                                     borderBottomRightRadius: 15,
                                                     borderTop: "none",
                                                 }}

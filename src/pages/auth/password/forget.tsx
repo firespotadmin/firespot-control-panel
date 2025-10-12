@@ -4,39 +4,28 @@ import { Label } from "@/components/ui/label";
 import { useLogin } from "@/hooks/auth-hook.hook";
 import { loginSchema } from "@/schema/auth-schema";
 import { Field, Form, Formik } from "formik";
-import { InfoCircle } from "iconsax-reactjs";
+import { InfoCircle, TickCircle } from "iconsax-reactjs";
 import { Loader } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const LoginPage = () => {
+const ForgotPassword = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [errorObject, setErrorObject] = useState<{ email?: string; password?: string; general?: string }>({});
 
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-[#F4F5F7]">
             <div className="max-w-lg shadow-sm rounded-2xl w-full bg-[#fff] h-fit">
-                {/* Header */}
-                <div className="bg-[#F4F5F7] flex items-center justify-center h-14 rounded-t-2xl">
-                    <p className="font-bold text-[#00000080] text-center">
-                        Don’t have an account?{" "}
-                        <Link to={"/request-access"}>
-                            <span className="bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
-                                Request Access
-                            </span>
-                        </Link>
-                    </p>
-                </div>
 
                 {/* Body */}
-                <div className="bg-[#fff] rounded-b-2xl px-10 py-8">
+                <div className="bg-[#fff] rounded-2xl px-10 py-8">
                     <div className="flex justify-center">
                         <img src="/logo.png" alt="" />
                     </div>
 
                     <div className="text-center pt-5">
-                        <p className="font-semibold text-xl">Welcome Back</p>
-                        <p>Log in to your firespot business account</p>
+                        <p className="font-semibold text-xl">Change Password</p>
+                        <p>Enter a new password for your Firespot Control Panel account</p>
                     </div>
 
                     <Formik
@@ -71,16 +60,16 @@ const LoginPage = () => {
                                 {/* Email Field */}
                                 <div className="pt-5">
                                     <Label className="text-md text-[#545F6C]" htmlFor="email">
-                                        Email address
+                                        Password
                                     </Label>
                                     <Field
                                         as={Input}
                                         disabled={loading}
-                                        name="email"
-                                        id="email"
+                                        name="password"
+                                        id="password"
                                         className="py-5 mt-1"
-                                        placeholder="Enter your email address"
-                                        type="email"
+                                        placeholder="Enter your password"
+                                        type="password"
                                     />
 
                                     {(touched.email && errors.email) || errorObject.email ? (
@@ -100,11 +89,6 @@ const LoginPage = () => {
                                         >
                                             Password
                                         </Label>
-                                        <Link to={"/initiate-reset"}>
-                                            <p className="underline font-medium text-right cursor-pointer">
-                                                Forgot password
-                                            </p>
-                                        </Link>
                                     </div>
 
                                     <Field
@@ -125,6 +109,11 @@ const LoginPage = () => {
                                     ) : null}
                                 </div>
 
+                                <div className="flex gap-1 pt-2">
+                                    <TickCircle size={20} color="#545F6C" variant="Bold" />
+                                    <p className="text-[#545F6C] text-sm font-medium">Use a combination of at least 8 numbers, letters and punctuation marks</p>
+                                </div>
+
                                 {/* General API Error */}
                                 {errorObject.general && (
                                     <div className="flex items-center gap-1 text-red-600 text-sm pt-3">
@@ -139,7 +128,7 @@ const LoginPage = () => {
                                     type="submit"
                                     className="mt-5 py-6 rounded-full bg-[#000000] cursor-pointer w-full"
                                 >
-                                    {loading ? <Loader className="animate-spin" /> : "Continue"}
+                                    {loading ? <Loader className="animate-spin" /> : "Change Password"}
                                 </Button>
                             </Form>
                         )}
@@ -150,4 +139,4 @@ const LoginPage = () => {
     );
 };
 
-export default LoginPage;
+export default ForgotPassword;
