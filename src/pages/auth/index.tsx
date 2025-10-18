@@ -7,10 +7,11 @@ import { Field, Form, Formik } from "formik";
 import { InfoCircle } from "iconsax-reactjs";
 import { Loader } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
+    const navigate = useNavigate();
     const [errorObject, setErrorObject] = useState<{ email?: string; password?: string; general?: string }>({});
 
     return (
@@ -46,7 +47,7 @@ const LoginPage = () => {
                             try {
                                 setErrorObject({});
                                 setLoading(true);
-                                const response = await useLogin({ data: values });
+                                const response: any = await useLogin({ data: values });
 
                                 // Example API response handling
                                 if (response?.data?.message === "There’s no account with this email address. Sign up to continue.") {
@@ -55,6 +56,11 @@ const LoginPage = () => {
                                     setErrorObject({ password: "The password entered is incorrect." });
                                 } else {
                                     console.log(response?.data);
+                                }
+
+                                if (response?.success) {
+                                    localStorage.setItem("token", response?.data?.token);
+                                    navigate("/dashboard");
                                 }
                             } catch (error: any) {
                                 console.error(error);
@@ -101,7 +107,7 @@ const LoginPage = () => {
                                             Password
                                         </Label>
                                         <Link to={"/initiate-reset"}>
-                                            <p className="underline font-medium text-right cursor-pointer">
+                                            <p className="underline font-medium text-sm text-right cursor-pointer">
                                                 Forgot password
                                             </p>
                                         </Link>

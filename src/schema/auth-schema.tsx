@@ -9,7 +9,7 @@ export const loginSchema = Yup.object({
 });
 
 export const requestAccessSchema = Yup.object().shape({
-  email: Yup.string()
+  emailAddress: Yup.string()
     .email("Enter a valid email address")
     .required("Email address is required"),
   role: Yup.string().required("Role is required"),

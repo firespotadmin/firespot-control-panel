@@ -1,99 +1,207 @@
 import { Button } from "@/components/ui/button";
-import { loginSchema } from "@/schema/auth-schema";
-import { Form, Formik } from "formik";
-import { ArrowLeft, InfoCircle } from "iconsax-reactjs";
+import { ArrowLeft } from "iconsax-reactjs";
 import { Loader } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { useResendOtp, useVerifyOtp } from "@/hooks/auth-hook.hook";
+import type { VerifyOtpResponse } from "@/types/auth";
+import toast, { Toaster } from "react-hot-toast";
 
 const VerifyEmail = () => {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [errorObject, setErrorObject] = useState<{ email?: string; password?: string; general?: string }>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [otp, setOtp] = useState<string>(""); // ✅ store OTP
+  const [timer, setTimer] = useState<number>(0); // 2 minutes
+  const [isResendDisabled, setIsResendDisabled] = useState<boolean>(true);
+  const [searchParams] = useSearchParams();
 
-    return (
-        <div className="flex h-screen w-screen items-center justify-center bg-[#F4F5F7]">
-            <div className="max-w-lg shadow-sm rounded-2xl w-full bg-[#fff] h-fit">
-                {/* Header */}
-                <div onClick={() => {
-                    window.history.back();
-                }} className="flex items-center cursor-pointer justify-left px-8 h-15 border-b-[1px] border-[#ddd] rounded-t-2xl">
-                    <ArrowLeft />
-                </div>
+  const email = searchParams.get("email") || "areegbedavid@gmail.com";
+  const navigate = useNavigate();
 
-                {/* Body */}
-                <div className="bg-[#fff] rounded-b-2xl px-10 py-8">
+  // ⏳ Countdown timer logic
+  useEffect(() => {
+    //@ts-ignore
+    let interval: NodeJS.Timeout | null = null;
 
-                    <div className="">
-                        <p className="font-semibold text-xl">Verify your email address</p>
-                        <p className="pt-1 text-sm">We have sent a one time password to the email address you used to register on Firespot Control Panel (areegbedavid@gmail.com)</p>
-                    </div>
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else {
+      setIsResendDisabled(false);
+    }
 
-                    <Formik
-                        initialValues={{ email: "", password: "" }}
-                        validationSchema={loginSchema}
-                        onSubmit={async (values) => {
-                            // try {
-                            //     setErrorObject({});
-                            //     setLoading(true);
-                            //     const response = await useLogin({ data: values });
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timer]);
 
-                            //     // Example API response handling
-                            //     if (response?.data?.message === "There’s no account with this email address. Sign up to continue.") {
-                            //         setErrorObject({ email: "There’s no account with this email address. Sign up to continue." });
-                            //     } else if (response?.data?.message === "The password entered is incorrect.") {
-                            //         setErrorObject({ password: "The password entered is incorrect." });
-                            //     } else {
-                            //         console.log(response?.data);
-                            //     }
-                            // } catch (error: any) {
-                            //     console.error(error);
-                            //     setErrorObject({
-                            //         general: error?.response?.data?.message || "Something went wrong. Please try again.",
-                            //     });
-                            // } finally {
-                            //     setLoading(false);
-                            // }
-                        }}
-                    >
-                        {({ errors, touched, isSubmitting }) => (
-                            <Form>
-                                {/* General API Error */}
-                                {errorObject.general && (
-                                    <div className="flex items-center gap-1 text-red-600 text-sm pt-3">
-                                        <InfoCircle size={16} variant="Bold" />
-                                        <p>{errorObject.general}</p>
-                                    </div>
-                                )}
+  // 🕑 Format timer (e.g., 1:23)
+  const formatTime = (seconds: number): string => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? `0${s}` : s}`;
+  };
 
-                                {/* Submit button */}
-                                <Link to={"/check-mail"}>
-                                    <div className="flex justify-center">
-                                        <Button
-                                            disabled={isSubmitting || loading}
-                                            type="submit"
-                                            className="mt-5 py-6 rounded-full bg-[#000000] cursor-pointer px-7 w-full"
-                                        >
-                                            {loading ? <Loader className="animate-spin" /> : "Continue"}
-                                        </Button>
-                                    </div>
-                                </Link>
+  // ✅ Verify OTP
+  const handleVerifyOtp = async () => {
+    if (otp.length < 4) {
+      toast.error("Please enter the complete OTP.", {
+        style: {
+          borderRadius: "100px",
+          background: "#333",
+          color: "#fff",
+          fontSize: "12px",
+        },
+      });
+      return;
+    }
 
-                                <p className="font-bold text-[#00000080] pt-3 text-center">
-                                    Didn't recieve an OTP? {" "}
-                                    <Link to={"/request-access"}>
-                                        <span className="bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
-                                            Resend OTP
-                                        </span>
-                                    </Link>
-                                </p>
+    if (!email) {
+      toast.error("Email is missing.", {
+        style: {
+          borderRadius: "100px",
+          background: "#333",
+          color: "#fff",
+          fontSize: "12px",
+        },
+      });
+      return;
+    }
 
-                            </Form>
-                        )}
-                    </Formik>
-                </div>
-            </div>
+    setLoading(true);
+
+    const res = (await useVerifyOtp({
+      data: { email, otp },
+    })) as VerifyOtpResponse;
+
+    setLoading(false);
+    const response = res;
+    console.log(response);
+
+    if (response?.data?.isVerified) {
+      toast.success("Thank you", {
+        icon: "✅",
+        style: {
+          borderRadius: "100px",
+          background: "#333",
+          fontSize: "12px",
+          color: "#fff",
+        },
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    } else {
+      toast.error("OTP verification failed!", {
+        icon: "❌",
+        style: {
+          borderRadius: "100px",
+          background: "#333",
+          color: "#fff",
+          fontSize: "12px",
+        },
+      });
+    }
+  };
+
+  // ✅ Resend OTP
+  const handleResend = async () => {
+    setTimer(120);
+    setIsResendDisabled(true);
+
+    const response = await useResendOtp({ email });
+    console.log(response);
+
+    toast.success(response?.message || "OTP resent successfully!", {
+      icon: "✉️",
+      style: {
+        borderRadius: "100px",
+        background: "#333",
+        color: "#fff",
+        fontSize: "12px",
+      },
+    });
+  };
+
+  return (
+    <div className="flex h-screen w-screen items-center justify-center bg-[#F4F5F7]">
+      <Toaster />
+      <div className="max-w-lg w-full bg-white rounded-2xl shadow-sm">
+        {/* Header */}
+        <div
+          onClick={() => window.history.back()}
+          className="flex items-center gap-2 cursor-pointer justify-start px-8 h-14 border-b border-[#ddd] rounded-t-2xl hover:bg-gray-50 transition"
+        >
+          <ArrowLeft size={20} />
         </div>
-    );
+
+        {/* Body */}
+        <div className="px-8 py-8">
+          <p className="font-semibold text-xl text-gray-900">
+            Verify your email address
+          </p>
+          <p className="pt-1 text-sm text-gray-600 font-medium leading-relaxed">
+            We have sent a one-time password (OTP) to the email address you used
+            to register on Firespot Control Panel{" "}({email})
+          </p>
+
+          <div className="pt-3">
+            <p className="pb-2 font-medium text-[#545F6C]">Enter OTP</p>
+            <InputOTP
+              maxLength={4}
+              value={otp}
+              onChange={(val: string) => setOtp(val)}
+            >
+              {[0, 1, 2, 3].map((index) => (
+                <InputOTPGroup key={index}>
+                  <InputOTPSlot
+                    style={{
+                      width: 50,
+                      height: 60,
+                      fontSize: 20,
+                    }}
+                    index={index}
+                  />
+                </InputOTPGroup>
+              ))}
+            </InputOTP>
+          </div>
+
+          <div className="pt-5">
+            <Button
+              onClick={handleVerifyOtp}
+              disabled={loading}
+              className="py-6 cursor-pointer px-8 w-full rounded-full bg-black text-white hover:bg-gray-800 font-semibold transition"
+            >
+              {loading ? <Loader className="animate-spin" /> : "Continue"}
+            </Button>
+          </div>
+
+          {/* Timer and Resend OTP */}
+          <div className="mt-6 text-center text-sm text-gray-600">
+            {isResendDisabled ? (
+              <p className="font-semibold text-md">
+                Request a new code in{" "}
+                <span className="text-black">{formatTime(timer)}</span>
+              </p>
+            ) : (
+              <button
+                onClick={handleResend}
+                className="font-semibold cursor-pointer"
+              >
+                Didn’t receive an OTP? {" "} <span className="bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent font-semibold hover:opacity-80 transition">Resend OTP</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default VerifyEmail;

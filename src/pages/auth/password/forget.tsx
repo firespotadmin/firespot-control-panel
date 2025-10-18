@@ -1,139 +1,183 @@
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Field, Form, Formik } from "formik";
+import * as Yup from "yup";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLogin } from "@/hooks/auth-hook.hook";
-import { loginSchema } from "@/schema/auth-schema";
-import { Field, Form, Formik } from "formik";
 import { InfoCircle, TickCircle } from "iconsax-reactjs";
 import { Loader } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+
+import { usePasswordReset } from "@/hooks/auth-hook.hook";
+import toast, { Toaster } from "react-hot-toast";
+
+// ✅ Validation schema for password reset
+const resetPasswordSchema = Yup.object().shape({
+    password: Yup.string()
+        .min(8, "Password must be at least 8 characters")
+        .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+        .matches(/\d/, "Password must contain at least one number")
+        .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
+        .required("Password is required"),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref("password"), ""], "Passwords must match")
+        .required("Confirm password is required"),
+});
 
 const ForgotPassword = () => {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [errorObject, setErrorObject] = useState<{ email?: string; password?: string; general?: string }>({});
+    const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(false);
+    const [errorObject, setErrorObject] = useState<{ general?: string }>({});
+    const [searchParams] = useSearchParams();
+
+    const uid = searchParams.get("uid"); // ✅ Extract ?uid=... from URL
+
+
+    console.log("UID from query:", uid);
+
+    const handleSubmit = async (values: { password: string; confirmPassword: string }) => {
+        if (!uid) {
+            setErrorObject({ general: "Invalid or missing reset link." });
+            return;
+        }
+
+        try {
+            setErrorObject({});
+            setLoading(true);
+
+            // ✅ API call using hook mutation or function
+            const response = await usePasswordReset({ uid, password: values.password });
+            ({
+                uid,
+                password: values.password,
+            });
+
+            console.log("Password reset successful:", response);
+            // Redirect or display success message
+            // e.g. navigate("/login?reset=success")
+            if (response?.success) {
+                toast.success("Password Reset Successfully!", {
+                    icon: "✅",
+                    duration: 5000,
+                    style: {
+                        borderRadius: "100px",
+                        background: "#333",
+                        color: "#fff",
+                        fontSize: "12px",
+                    },
+                });
+                setTimeout(() => {
+                    navigate("/");
+                }, 1500);
+            }
+        } catch (error: any) {
+            console.error(error);
+            setErrorObject({
+                general: error?.response?.data?.message || "Something went wrong. Please try again.",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-[#F4F5F7]">
-            <div className="max-w-lg shadow-sm rounded-2xl w-full bg-[#fff] h-fit">
+            <Toaster position="top-center" />
+            <div className="max-w-lg w-full bg-white rounded-2xl shadow-sm p-8">
+                {/* Logo */}
+                <div className="flex justify-center mb-4">
+                    <img src="/logo.png" alt="Firespot Logo" className="h-10" />
+                </div>
 
-                {/* Body */}
-                <div className="bg-[#fff] rounded-2xl px-10 py-8">
-                    <div className="flex justify-center">
-                        <img src="/logo.png" alt="" />
-                    </div>
+                {/* Header */}
+                <div className="text-center mb-6">
+                    <p className="font-semibold text-xl">Change Password</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                        Enter a new password for your Firespot Control Panel account.
+                    </p>
+                </div>
 
-                    <div className="text-center pt-5">
-                        <p className="font-semibold text-xl">Change Password</p>
-                        <p>Enter a new password for your Firespot Control Panel account</p>
-                    </div>
-
-                    <Formik
-                        initialValues={{ email: "", password: "" }}
-                        validationSchema={loginSchema}
-                        onSubmit={async (values) => {
-                            try {
-                                setErrorObject({});
-                                setLoading(true);
-                                const response = await useLogin({ data: values });
-
-                                // Example API response handling
-                                if (response?.data?.message === "There’s no account with this email address. Sign up to continue.") {
-                                    setErrorObject({ email: "There’s no account with this email address. Sign up to continue." });
-                                } else if (response?.data?.message === "The password entered is incorrect.") {
-                                    setErrorObject({ password: "The password entered is incorrect." });
-                                } else {
-                                    console.log(response?.data);
-                                }
-                            } catch (error: any) {
-                                console.error(error);
-                                setErrorObject({
-                                    general: error?.response?.data?.message || "Something went wrong. Please try again.",
-                                });
-                            } finally {
-                                setLoading(false);
-                            }
-                        }}
-                    >
-                        {({ errors, touched, isSubmitting }) => (
-                            <Form>
-                                {/* Email Field */}
-                                <div className="pt-5">
-                                    <Label className="text-md text-[#545F6C]" htmlFor="email">
-                                        Password
-                                    </Label>
-                                    <Field
-                                        as={Input}
-                                        disabled={loading}
-                                        name="password"
-                                        id="password"
-                                        className="py-5 mt-1"
-                                        placeholder="Enter your password"
-                                        type="password"
-                                    />
-
-                                    {(touched.email && errors.email) || errorObject.email ? (
-                                        <div className="flex items-center gap-1 text-red-600 text-sm pt-1">
-                                            <InfoCircle size={16} variant="Bold" />
-                                            <p>{errorObject.email || errors.email}</p>
-                                        </div>
-                                    ) : null}
-                                </div>
-
-                                {/* Password Field */}
-                                <div className="pt-5">
-                                    <div className="flex items-center justify-between">
-                                        <Label
-                                            className="text-md text-[#545F6C]"
-                                            htmlFor="password"
-                                        >
-                                            Password
-                                        </Label>
-                                    </div>
-
-                                    <Field
-                                        as={Input}
-                                        disabled={loading}
-                                        name="password"
-                                        id="password"
-                                        className="py-5 mt-1"
-                                        placeholder="Enter your password"
-                                        type="password"
-                                    />
-
-                                    {(touched.password && errors.password) || errorObject.password ? (
-                                        <div className="flex items-center gap-1 text-red-600 text-sm pt-1">
-                                            <InfoCircle size={16} variant="Bold" />
-                                            <p>{errorObject.password || errors.password}</p>
-                                        </div>
-                                    ) : null}
-                                </div>
-
-                                <div className="flex gap-1 pt-2">
-                                    <TickCircle size={20} color="#545F6C" variant="Bold" />
-                                    <p className="text-[#545F6C] text-sm font-medium">Use a combination of at least 8 numbers, letters and punctuation marks</p>
-                                </div>
-
-                                {/* General API Error */}
-                                {errorObject.general && (
-                                    <div className="flex items-center gap-1 text-red-600 text-sm pt-3">
+                <Formik
+                    initialValues={{ password: "", confirmPassword: "" }}
+                    validationSchema={resetPasswordSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ errors, touched, isSubmitting }) => (
+                        <Form>
+                            {/* New Password */}
+                            <div className="pt-3">
+                                <Label htmlFor="password" className="text-md text-[#545F6C]">
+                                    New Password
+                                </Label>
+                                <Field
+                                    as={Input}
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="Enter new password"
+                                    disabled={loading}
+                                    className="py-5 mt-1"
+                                />
+                                {touched.password && errors.password && (
+                                    <div className="flex items-center gap-1 text-red-600 text-sm pt-1">
                                         <InfoCircle size={16} variant="Bold" />
-                                        <p>{errorObject.general}</p>
+                                        <p>{errors.password}</p>
                                     </div>
                                 )}
+                            </div>
 
-                                {/* Submit button */}
-                                <Button
-                                    disabled={isSubmitting || loading}
-                                    type="submit"
-                                    className="mt-5 py-6 rounded-full bg-[#000000] cursor-pointer w-full"
-                                >
-                                    {loading ? <Loader className="animate-spin" /> : "Change Password"}
-                                </Button>
-                            </Form>
-                        )}
-                    </Formik>
-                </div>
+                            {/* Confirm Password */}
+                            <div className="pt-5">
+                                <Label htmlFor="confirmPassword" className="text-md text-[#545F6C]">
+                                    Confirm Password
+                                </Label>
+                                <Field
+                                    as={Input}
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    type="password"
+                                    placeholder="Confirm your password"
+                                    disabled={loading}
+                                    className="py-5 mt-1"
+                                />
+                                {touched.confirmPassword && errors.confirmPassword && (
+                                    <div className="flex items-center gap-1 text-red-600 text-sm pt-1">
+                                        <InfoCircle size={16} variant="Bold" />
+                                        <p>{errors.confirmPassword}</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Password strength hint */}
+                            <div className="flex gap-1 pt-2">
+                                <TickCircle size={20} color="#545F6C" variant="Bold" />
+                                <p className="text-[#545F6C] text-sm font-medium">
+                                    Use at least 8 characters, including numbers, letters, and symbols.
+                                </p>
+                            </div>
+
+                            {/* General API Error */}
+                            {errorObject.general && (
+                                <div className="flex items-center gap-1 text-red-600 text-sm pt-3">
+                                    <InfoCircle size={16} variant="Bold" />
+                                    <p>{errorObject.general}</p>
+                                </div>
+                            )}
+
+                            {/* Submit Button */}
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting || loading}
+                                className="mt-6 py-6 rounded-full cursor-pointer bg-black hover:bg-gray-800 w-full"
+                            >
+                                {loading ? <Loader className="animate-spin" /> : "Change Password"}
+                            </Button>
+                        </Form>
+                    )}
+                </Formik>
             </div>
         </div>
     );

@@ -1,49 +1,49 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useLogin } from "@/hooks/auth-hook.hook";
-import { loginSchema } from "@/schema/auth-schema";
-import { Field, Form, Formik } from "formik";
-import { ArrowLeft, InfoCircle } from "iconsax-reactjs";
-import { Loader } from "lucide-react";
+import { ArrowLeft } from "iconsax-reactjs";
+import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Link, useNavigation } from "react-router-dom";
 
 const CheckMail = () => {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [errorObject, setErrorObject] = useState<{ email?: string; password?: string; general?: string }>({});
+    const [loading] = useState<boolean>(false);
+
+    // Optionally: get email from query param if available
+    // const [searchParams] = useSearchParams();
+    // const email = searchParams.get("email") || "areegbedavid@gmail.com";
 
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-[#F4F5F7]">
-            <div className="max-w-lg shadow-sm rounded-2xl w-full bg-[#fff] h-fit">
+            <div className="max-w-lg w-full bg-white rounded-2xl shadow-sm">
                 {/* Header */}
-                 <div onClick={()=>{
-                    window.history.back();
-                }} className="flex items-center cursor-pointer justify-left px-8 h-15 border-b-[1px] border-[#ddd] rounded-t-2xl">
-                    <ArrowLeft />
+                <div
+                    onClick={() => window.history.back()}
+                    className="flex items-center gap-2 px-6 py-4 border-b cursor-pointer hover:bg-gray-50 rounded-t-2xl transition"
+                >
+                    <ArrowLeft size={20} />
+                    <span className="text-sm font-medium">Back</span>
                 </div>
 
                 {/* Body */}
-                <div className="bg-[#fff] rounded-b-2xl px-10 py-8">
-                    <div className="flex justify-center">
-                        <img src="/mail.png" className="w-30 h-30 object-fill" alt="" />
+                <div className="px-10 py-8 text-center">
+                    <div className="flex justify-center mb-5">
+                        <img src="/mail.png" className="w-20 h-20 object-contain" alt="Mail illustration" />
                     </div>
 
-                    <div className="text-center pt-1">
-                        <p className="font-semibold text-xl">Check your inbox</p>
-                        <p>We've sent a password reset link to your email areegbedavid@gmail.com</p>
-                    </div>
+                    <p className="font-semibold text-xl text-gray-900">Check your inbox</p>
+                    <p className="text-sm text-gray-600 mt-2">
+                        We’ve sent a password reset link to your email <br />
+                        <span className="font-medium text-gray-800">areegbedavid@gmail.com</span>
+                    </p>
 
-                    <Link to={"/forgot-password"}>
-                        <div className="flex justify-center">
+                    <div className="flex justify-center mt-8">
+                        <Link to="/">
                             <Button
-                                type="submit"
-                                className="mt-5 py-6 rounded-full font-semibold text-xs bg-[#F4F5F7] hover:bg-[#F4F5F7] text-[#000] cursor-pointer px-7"
+                                disabled={loading}
+                                className="py-5 px-8 rounded-full bg-[#F4F5F7] hover:bg-gray-200 text-black font-semibold text-xs"
                             >
                                 OKAY, GOT IT
                             </Button>
-                        </div>
-                    </Link>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
