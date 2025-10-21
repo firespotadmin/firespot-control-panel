@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface LoginPayload {
   email: string;
   password: string;
@@ -54,4 +56,10 @@ export interface VerifyOtpResponseData {
   isSuccess: boolean;
   isVerified: boolean;
   token: string; // JWT token
+}
+export interface LinkCompoProps {
+  icon: ReactNode;
+  text: string;
+  link: string;
+  active?: boolean;
 }
