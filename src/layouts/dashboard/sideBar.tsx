@@ -1,5 +1,5 @@
 import LinkCompo from "@/components/common/dashboard/linkCompo";
-import { Chart, Chart1, ChartCircle } from "iconsax-reactjs";
+import { Chart1, ChartCircle } from "iconsax-reactjs";
 
 const SideBar = () => {
     return (
