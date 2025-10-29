@@ -7,7 +7,6 @@ import CheckMail from "./pages/auth/password/check-mail"
 import VerifyEmail from "./pages/auth/MFA"
 import Dashboard from "./pages/dashboard"
 import ProtectedRoute from "./pages/security/protected"
-import Loading from "./layouts/loading"
 
 const App = () => {
   return (
