@@ -16,7 +16,10 @@ const Dashboard = () => {
   const [data, setData] = useState<StatsResponse>(null!);
 
   const fetchStats = async () => {
-    const response = await useGetStats() as StatsResponse;
+    const response = await useGetStats({
+      fromDate: "",
+      toDate: ""
+    }) as StatsResponse;
     console.log(response)
     if (response?.success) {
       setData(response);
