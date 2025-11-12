@@ -20,17 +20,17 @@ const DashboardContent = ({ data }: DashboardContentProps) => {
           <ColorBox
             count={data?.registeredUsers?.toString() || "0"}
             label="Registered Users"
-            color="#2563EB"
+            color="#000"
           />
           <ColorBox
             count={data?.guestUsers?.toString() || "0"}
             label="Guest Users"
-            color="#F59E0B"
+            color="#000"
           />
           <ColorBox
             count={data?.activeUsers?.toString() || "0"}
             label="Active Users"
-            color="#10B981"
+            color="#000"
           />
           <ColorBox
             count={data?.inactiveUsers?.toString() || "0"}

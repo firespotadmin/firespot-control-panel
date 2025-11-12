@@ -9,7 +9,7 @@ const DashboardContent5 = () => {
                 </h1>
                 <div className="grid grid-cols-3 gap-5 pb-8">
                     <ColorBox count="0" label="Total Support Tickets" color="#000" />
-                    <ColorBox count="0" label="Resolved Support Tickets" color="" />
+                    <ColorBox count="0" label="Resolved Support Tickets" color="#000" />
                     <ColorBox count="0" label="Open Support Tickets" color="#F9A000" />
                 </div>
                 <hr />

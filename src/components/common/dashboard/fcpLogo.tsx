@@ -1,7 +1,7 @@
 const FCPLogo = () => {
     return (
         <div>
-            <img src="/fcp.png" className='w-100' alt="" />
+            <img src="/fcp.png" className='w-[326px] h-[28px]' alt="" />
         </div>
     )
 }

@@ -9,8 +9,8 @@ const DashboardContent6 = () => {
                 </h1>
                 <div className="grid grid-cols-3 gap-5 pb-8">
                     <ColorBox count="0" label="QR Kits Generated" color="#000" />
-                    <ColorBox count="0" label="Static QR Scans" color="" />
-                    <ColorBox count="0" label="Dynamic QR Scans" text='fs_Collect' color="#F9A000" />
+                    <ColorBox count="0" label="Static QR Scans" color="#000" />
+                    <ColorBox count="0" label="Dynamic QR Scans" text='fs_Collect' color="#000" />
                 </div>
                 <hr />
             </div>

@@ -19,7 +19,7 @@ const DashboardContent4 = ({ data }: DashboardContent4Props) => {
           <ColorBox
             count={data?.customersPaid?.toString() || "0"}
             label="Customers Paid"
-            color="#2563EB"
+            color="#000"
           />
           <ColorBox
             count={data?.customerStatementsGenerated?.toString() || "0"}

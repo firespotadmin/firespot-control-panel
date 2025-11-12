@@ -37,7 +37,7 @@ const DashboardContent2 = ({ data }: DashboardContent2Props) => {
           <ColorBox
             count={`₦ ${formatNumber(data?.walletFloat)}`}
             label="Wallet Float"
-            color="#2563EB"
+            color="#000"
           />
 
           <ColorBox
@@ -49,17 +49,17 @@ const DashboardContent2 = ({ data }: DashboardContent2Props) => {
           <ColorBox
             count={formatNumber(data?.totalTransactions)}
             label="Total Transactions"
-            color="#0EA5E9"
+            color="#000"
           />
 
           <ColorBox
             count={`${successRate}%`}
             label="Successful Transactions"
-            color="#10B981"
+            color="#000"
           />
 
           <ColorBox
-            count={formatNumber(data?.failedTransactions)}
+            count={`${formatNumber(data?.failedTransactions)}%`}
             label="Failed Transactions"
             color="#FF002E"
           />
@@ -67,13 +67,13 @@ const DashboardContent2 = ({ data }: DashboardContent2Props) => {
           <ColorBox
             count={formatNumber(data?.cardsProcessed)}
             label="Cards Processed"
-            color="#7C3AED"
+            color="#000"
           />
 
           <ColorBox
             count={formatNumber(data?.transfersProcessed)}
             label="Transfers Processed"
-            color="#2563EB"
+            color="#000"
           />
 
           <ColorBox

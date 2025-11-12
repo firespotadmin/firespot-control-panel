@@ -19,7 +19,7 @@ const DashboardContent3 = ({ data }: DashboardContent3Props) => {
           <ColorBox
             count={data?.activeBusinesses?.toString() || "0"}
             label="Total Active"
-            color="#2563EB"
+            color="#000"
           />
           <ColorBox
             count={data?.statementsGenerated?.toString() || "0"}

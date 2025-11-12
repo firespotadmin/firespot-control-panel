@@ -21,7 +21,7 @@ const DashboardContent7 = ({ data }: DashboardContent7Props) => {
           <ColorBox
             count={data?.businessesRated.toString() || "0"}
             label="Businesses Rated"
-            color="#24C166"
+            color="#000"
           />
           <ColorBox
             count="0"
