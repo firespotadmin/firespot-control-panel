@@ -86,10 +86,10 @@ const RequestAccess = () => {
       <div className="max-w-lg shadow-sm rounded-2xl w-full bg-[#fff] h-fit">
         {/* Header */}
         <div className="bg-[#F4F5F7] flex items-center justify-center h-14 rounded-t-2xl">
-          <p className="font-bold text-[#00000080] text-center">
+          <p className="font-[700] text-[#00000080] text-center text-[14px]">
             Already have an account?{" "}
             <Link to={"/"}>
-              <span className="bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r text-[14px] font-[700] from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
                 Log in
               </span>
             </Link>
@@ -97,14 +97,14 @@ const RequestAccess = () => {
         </div>
 
         {/* Body */}
-        <div className="bg-[#fff] rounded-b-2xl px-10 py-8">
+        <div className="bg-[#fff] rounded-b-2xl p-[32px]">
           <div className="flex justify-center">
-            <img src="/logo.png" alt="logo" />
+            <img src="/logo.png" alt="" className="w-[48px] h-[48px]" />
           </div>
 
           <div className="text-center pt-5">
-            <p className="font-semibold text-xl">Request access</p>
-            <p className="text-sm text-[#666]">
+            <p className="font-[700] text-[20px]">Request access</p>
+            <p className="text-[14px] font-[500] text-[#00000080]">
               The Super Admin will approve or deny your request
             </p>
           </div>
@@ -151,7 +151,7 @@ const RequestAccess = () => {
                 {/* Email Field */}
                 <div className="pt-5">
                   <Label
-                    className="text-sm text-[#545F6C]"
+                    className="font-[500] text-[#545F6C] text-[12px]"
                     htmlFor="emailAddress"
                   >
                     Email address
@@ -161,7 +161,7 @@ const RequestAccess = () => {
                     disabled={loading}
                     name="emailAddress"
                     id="emailAddress"
-                    className="py-5 mt-1"
+                    className="p-[16px] h-[44px] mt-1 text-[14px] font-[500]"
                     placeholder="Enter your email address"
                     type="emailAddress"
                   />
@@ -175,7 +175,7 @@ const RequestAccess = () => {
 
                 {/* Role Field */}
                 <div className="pt-5">
-                  <Label className="text-sm text-[#545F6C]" htmlFor="role">
+                  <Label className="font-[500] text-[#545F6C] text-[12px]" htmlFor="role">
                     Role
                   </Label>
 
@@ -184,9 +184,9 @@ const RequestAccess = () => {
                     defaultValue={values.role}
                   >
                     <SelectTrigger className="w-full py-5 mt-1">
-                      <SelectValue placeholder="Select role" />
+                      <SelectValue className="text-[14px]" placeholder="Select role" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="text-[14px]">
                       <SelectItem value={"ADMIN"}>ADMIN</SelectItem>
                       <SelectItem value="CUSTOMER_CARE">
                         CUSTOMER_CARE
@@ -302,7 +302,7 @@ const RequestAccess = () => {
                 <Button
                   disabled={loading}
                   type="submit"
-                  className="mt-6 py-6 rounded-full bg-[#000000] cursor-pointer w-full"
+                  className="mt-6 p-[12px] h-[48px] rounded-full bg-[#000000] cursor-pointer w-full"
                 >
                   {loading ? (
                     <Loader className="animate-spin" />

@@ -16,13 +16,13 @@ const LoginPage = () => {
 
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-[#F4F5F7]">
-            <div className="max-w-lg shadow-sm rounded-2xl w-full bg-[#fff] h-fit">
+            <div className="max-w-lg shadow-sm rounded-2xl w-[480px] bg-[#fff] h-fit">
                 {/* Header */}
                 <div className="bg-[#F4F5F7] flex items-center justify-center h-14 rounded-t-2xl">
-                    <p className="font-bold text-[#00000080] text-center">
+                    <p className="font-[700] text-[#00000080] text-center text-[14px]">
                         Don’t have an account?{" "}
                         <Link to={"/request-access"}>
-                            <span className="bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r text-[14px] font-[700] from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
                                 Request Access
                             </span>
                         </Link>
@@ -30,14 +30,14 @@ const LoginPage = () => {
                 </div>
 
                 {/* Body */}
-                <div className="bg-[#fff] rounded-b-2xl px-10 py-8">
+                <div className="bg-[#fff] rounded-b-2xl p-[32px]">
                     <div className="flex justify-center">
-                        <img src="/logo.png" alt="" />
+                        <img src="/logo.png" alt="" className="w-[48px] h-[48px]" />
                     </div>
 
                     <div className="text-center pt-5">
-                        <p className="font-semibold text-xl">Welcome Back</p>
-                        <p>Log in to your firespot business account</p>
+                        <p className="font-[700] text-[20px]">Welcome back</p>
+                        <p className="text-[14px] font-[500] text-[#00000080]">Log in to your firespot business account</p>
                     </div>
 
                     <Formik
@@ -76,7 +76,7 @@ const LoginPage = () => {
                             <Form>
                                 {/* Email Field */}
                                 <div className="pt-5">
-                                    <Label className="text-md text-[#545F6C]" htmlFor="email">
+                                    <Label className="font-[500] text-[#545F6C] text-[12px]" htmlFor="email">
                                         Email address
                                     </Label>
                                     <Field
@@ -84,15 +84,15 @@ const LoginPage = () => {
                                         disabled={loading}
                                         name="email"
                                         id="email"
-                                        className="py-5 mt-1"
+                                        className="p-[16px] h-[44px] mt-1 text-[14px] font-[500]"
                                         placeholder="Enter your email address"
                                         type="email"
                                     />
 
                                     {(touched.email && errors.email) || errorObject.email ? (
                                         <div className="flex items-center gap-1 text-red-600 text-sm pt-1">
-                                            <InfoCircle size={16} variant="Bold" />
-                                            <p>{errorObject.email || errors.email}</p>
+                                            <InfoCircle size={14} variant="Bold" />
+                                            <p className="text-[12px] font-[500]">{errorObject.email || errors.email}</p>
                                         </div>
                                     ) : null}
                                 </div>
@@ -101,13 +101,13 @@ const LoginPage = () => {
                                 <div className="pt-5">
                                     <div className="flex items-center justify-between">
                                         <Label
-                                            className="text-md text-[#545F6C]"
+                                            className="font-[500] text-[#545F6C] text-[12px]" 
                                             htmlFor="password"
                                         >
                                             Password
                                         </Label>
                                         <Link to={"/initiate-reset"}>
-                                            <p className="underline font-medium text-sm text-right cursor-pointer">
+                                            <p className="underline font-[500] text-[12px] text-right cursor-pointer">
                                                 Forgot password
                                             </p>
                                         </Link>
@@ -118,15 +118,15 @@ const LoginPage = () => {
                                         disabled={loading}
                                         name="password"
                                         id="password"
-                                        className="py-5 mt-1"
+                                        className="p-[16px] h-[44px] mt-1 text-[14px] font-[500]"
                                         placeholder="Enter your password"
                                         type="password"
                                     />
 
                                     {(touched.password && errors.password) || errorObject.password ? (
                                         <div className="flex items-center gap-1 text-red-600 text-sm pt-1">
-                                            <InfoCircle size={16} variant="Bold" />
-                                            <p>{errorObject.password || errors.password}</p>
+                                            <InfoCircle size={14} variant="Bold" />
+                                            <p className="text-[12px] font-[500]">{errorObject.password || errors.password}</p>
                                         </div>
                                     ) : null}
                                 </div>
@@ -143,7 +143,7 @@ const LoginPage = () => {
                                 <Button
                                     disabled={isSubmitting || loading}
                                     type="submit"
-                                    className="mt-5 py-6 rounded-full bg-[#000000] cursor-pointer w-full"
+                                    className="mt-5 p-[12px] text-[16px] font-[700] h-[48px] rounded-full bg-[#000000] cursor-pointer w-full"
                                 >
                                     {loading ? <Loader className="animate-spin" /> : "Continue"}
                                 </Button>
