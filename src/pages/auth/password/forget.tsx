@@ -4,7 +4,7 @@ import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import PasswordInput from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { InfoCircle, TickCircle } from "iconsax-reactjs";
 import { Loader } from "lucide-react";
@@ -113,10 +113,9 @@ const ForgotPassword = () => {
                                     New Password
                                 </Label>
                                 <Field
-                                    as={Input}
+                                    as={PasswordInput}
                                     id="password"
                                     name="password"
-                                    type="password"
                                     placeholder="Enter new password"
                                     disabled={loading}
                                     className="py-5 mt-1"
@@ -135,10 +134,9 @@ const ForgotPassword = () => {
                                     Confirm Password
                                 </Label>
                                 <Field
-                                    as={Input}
+                                    as={PasswordInput}
                                     id="confirmPassword"
                                     name="confirmPassword"
-                                    type="password"
                                     placeholder="Confirm your password"
                                     disabled={loading}
                                     className="py-5 mt-1"

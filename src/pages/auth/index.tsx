@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import PasswordInput from "@/components/ui/password-input";
 import { useLogin } from "@/hooks/auth-hook.hook";
 import { loginSchema } from "@/schema/auth-schema";
 import { Field, Form, Formik } from "formik";
@@ -114,13 +115,12 @@ const LoginPage = () => {
                                     </div>
 
                                     <Field
-                                        as={Input}
+                                        as={PasswordInput}
                                         disabled={loading}
                                         name="password"
                                         id="password"
                                         className="p-[16px] h-[44px] mt-1 text-[14px] font-[500]"
                                         placeholder="Enter your password"
-                                        type="password"
                                     />
 
                                     {(touched.password && errors.password) || errorObject.password ? (
