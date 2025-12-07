@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowDown2 } from "iconsax-reactjs";
-import { File } from "lucide-react";
+import { File, Download } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -14,6 +14,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { DatePicker } from "@/components/ui/calender28";
 import { setDateRange } from "@/stores/store/date-range-slice";
 import { useDispatch } from "react-redux";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const TopContentOne = () => {
   const dispatch = useDispatch();
@@ -21,6 +29,9 @@ const TopContentOne = () => {
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | undefined>();
   const [selectedDateTo, setSelectedDateTo] = useState<Date | undefined>();
   const [selectedPeriod, setSelectedPeriod] = useState<string>("this-week");
+  const [reportDateFrom, setReportDateFrom] = useState<Date | undefined>();
+  const [reportDateTo, setReportDateTo] = useState<Date | undefined>();
+  const [reportFormat, setReportFormat] = useState<string>("pdf");
 
   const handleRadioChange = (value: string) => {
     setSelectedPeriod(value);
@@ -97,6 +108,15 @@ const TopContentOne = () => {
   const clearFilters = () => {
     setSelectedPeriod("this-week");
     handleRadioChange("this-week");
+  };
+
+  const handleDownloadReport = () => {
+    if (reportDateFrom && reportDateTo) {
+      console.log(
+        `Downloading ${reportFormat.toUpperCase()} report from ${reportDateFrom.toLocaleDateString()} to ${reportDateTo.toLocaleDateString()}`
+      );
+      // TODO: Add your API call here to download the report
+    }
   };
 
   const ranges = [
@@ -187,9 +207,114 @@ const TopContentOne = () => {
         </div>
 
         {/* Right side button */}
-        <Button className="py-[12px] bg-[#E5E7EB] font-medium hover:bg-[#E5E7EB] text-[#000] gap-2 text-[12px] h-[40px] cursor-pointer rounded-full">
-          <File /> DOWNLOAD REPORT
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="py-[12px] bg-[#E5E7EB] font-medium hover:bg-[#E5E7EB] text-[#000] gap-2 text-[12px] h-[40px] cursor-pointer rounded-full">
+              <File /> DOWNLOAD REPORT
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px] p-0">
+            <DialogHeader>
+              <div className="flex justify-center border-b p-[10px]">
+                <DialogTitle className="text-[16px]">Download Report</DialogTitle>
+              </div>
+            </DialogHeader>
+            <div className="grid gap-4 py-4 px-5">
+              {/* Date Range Selection */}
+              <div className="grid gap-3">
+                <Label className="text-[12px] font-[500]">
+                  Select Date Range
+                </Label>
+                <div className="flex justify-between gap-4">
+                  <div className="flex-1">
+                    <DatePicker
+                      value={reportDateFrom}
+                      onChange={setReportDateFrom}
+                      label="From"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <DatePicker
+                      value={reportDateTo}
+                      onChange={setReportDateTo}
+                      label="To"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Report Format Selection */}
+              <div className="grid gap-3">
+                <Label className="text-[12px] font-[500]">Format Type</Label>
+                <RadioGroup
+                  value={reportFormat}
+                  onValueChange={setReportFormat}
+                  className="flex gap-3"
+                >
+                  <div className="flex-1">
+                    <Label
+                      htmlFor="pdf-format"
+                      className={`flex items-center space-x-2 border-1 w-full py-3 px-4 rounded-lg cursor-pointer transition-all ${
+                        reportFormat === "pdf"
+                          ? "border-black"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <RadioGroupItem
+                        value="pdf"
+                        id="pdf-format"
+                        className="text-black"
+                      />
+                      <span className="text-[14px] font-[500]">.pdf</span>
+                    </Label>
+                  </div>
+                  <div className="flex-1">
+                    <Label
+                      htmlFor="csv-format"
+                      className={`flex items-center space-x-2 border-1 w-full py-3 px-4 rounded-lg cursor-pointer transition-all ${
+                        reportFormat === "csv"
+                          ? "border-black"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <RadioGroupItem
+                        value="csv"
+                        id="csv-format"
+                        className="text-black"
+                      />
+                      <span className="text-[14px] font-[500]">.csv</span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
+
+            <hr className="mx-5" />  
+
+            <div className="flex justify-between p-5">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setReportDateFrom(undefined);
+                  setReportDateTo(undefined);
+                  setReportFormat("pdf");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleDownloadReport}
+                disabled={!reportDateFrom || !reportDateTo}
+                className="bg-[#000] hover:bg-[#000] rounded-full text-white"
+              >
+                <Download className="w-4 h-4 mr-1" />
+                Download
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
