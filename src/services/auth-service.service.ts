@@ -1,9 +1,9 @@
-import axiosInstance from "@/security/api-secured";
+import axiosInstance, { axiosPublicInstance } from "@/security/api-secured";
 import type { CreateUserDto, LoginPayload, VerifyOtpRequest } from "@/types/auth";
 
 export const login = async ({ data }: { data: LoginPayload }) => {
   try {
-    const response = await axiosInstance.post("/api/v1/admin/login", {
+    const response = await axiosPublicInstance.post("/api/v1/admin/login", {
       emailAddress: data?.email,
       password: data?.password,
     });
@@ -14,7 +14,7 @@ export const login = async ({ data }: { data: LoginPayload }) => {
 };
 export const initiateReset = async ({ email }: { email: string }) => {
   try {
-    const response = await axiosInstance.post("/api/v1/admin/initiate-reset", {
+    const response = await axiosPublicInstance.post("/api/v1/admin/initiate-reset", {
       email: email,
     });
     return response.data;
@@ -30,7 +30,7 @@ export const resetPassword = async ({
   password: string;
 }) => {
   try {
-    const response = await axiosInstance.put("/api/v1/admin/reset-password", {
+    const response = await axiosPublicInstance.put("/api/v1/admin/reset-password", {
       uid: uid,
       password: password,
     });
@@ -41,7 +41,7 @@ export const resetPassword = async ({
 };
 export const requestAccess = async ({ data }: { data: CreateUserDto }) => {
   try {
-    const response = await axiosInstance.post("/api/v1/admin/create", data);
+    const response = await axiosPublicInstance.post("/api/v1/admin/create", data);
     return response.data;
   } catch (error: any) {
     return error?.response;

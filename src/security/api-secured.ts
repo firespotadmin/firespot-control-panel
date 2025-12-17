@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// ✅ Secured instance with token for authenticated requests
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
@@ -7,7 +8,15 @@ const axiosInstance = axios.create({
   },
 });
 
-// ✅ Request Interceptor — attach token automatically
+// ✅ Public instance without token for public requests (login, signup, forgot password)
+export const axiosPublicInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// ✅ Request Interceptor — attach token automatically to secured requests only
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
