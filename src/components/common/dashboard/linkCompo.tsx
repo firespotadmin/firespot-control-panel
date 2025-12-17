@@ -6,8 +6,8 @@ const LinkCompo = ({ icon, text, link, active = false }: LinkCompoProps) => {
   return (
     <Link
       to={link}
-      className={`flex items-center bg-none  gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all ${
-        active ? "bg-gray-100 text-black" : "text-black hover:bg-gray-100"
+      className={`flex items-center bg-none h-[36px]  gap-3 px-4 py-3 rounded-[10px] cursor-pointer transition-all ${
+        active ? "bg-[#E5E7EB] text-black" : "text-black hover:bg-gray-100"
       }`}
     >
       <span className="text-xl">{icon}</span>
