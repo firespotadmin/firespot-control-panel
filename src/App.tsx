@@ -8,6 +8,7 @@ import VerifyEmail from "./pages/auth/MFA";
 import Dashboard from "./pages/dashboard";
 import ProtectedRoute from "./pages/security/protected";
 import Businesses from "./pages/businesses";
+import Customers from "./pages/customers";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/businesses" element={<Businesses />} />
+        <Route path="/customers" element={<Customers />} />
       </Route>
     </Routes>
   );
