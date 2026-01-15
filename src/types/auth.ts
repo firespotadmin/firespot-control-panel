@@ -40,7 +40,7 @@ export interface AdminData {
   lastName: string;
   isActive: boolean;
   password: string; // usually hashed
-  active: boolean;
+  profileImageUrl?: string;
 }
 // types.ts
 export interface VerifyOtpRequest {

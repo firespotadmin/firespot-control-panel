@@ -9,6 +9,10 @@ import Dashboard from "./pages/dashboard";
 import ProtectedRoute from "./pages/security/protected";
 import Businesses from "./pages/businesses";
 import Customers from "./pages/customers";
+import BusinessView from "./pages/businesses/business";
+import Transactions from "./pages/transactions";
+import Products from "./pages/products";
+import NotFound from "./pages/404/not-found";
 
 const App = () => {
   return (
@@ -23,8 +27,12 @@ const App = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/businesses" element={<Businesses />} />
+        <Route path="/business/:id" element={<BusinessView />} />
         <Route path="/customers" element={<Customers />} />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/products" element={<Products />} />
       </Route>
+        <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

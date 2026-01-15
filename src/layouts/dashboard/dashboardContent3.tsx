@@ -12,7 +12,9 @@ const DashboardContent3 = ({ data }: DashboardContent3Props) => {
         <h1 className="font-bold text-[24px] py-5">Businesses</h1>
         <div className="grid grid-cols-3 gap-5 pb-8">
           <ColorBox
-            count={"+"+data?.newSignUps?.toString() || "0"}
+            count={
+              ("+" + data?.newSignUps && data?.newSignUps?.toString()) || "0"
+            }
             label="Sign Ups"
             color="#24C166"
           />
