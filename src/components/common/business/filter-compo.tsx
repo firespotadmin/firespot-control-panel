@@ -1,8 +1,3 @@
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { ArrowDown2 } from "iconsax-reactjs";
 const FilterCompo = ({ data }: { data: any }) => {
   return (
