@@ -43,3 +43,53 @@ export interface BusinessTransactionsQuery {
   page?: number;
   size?: number;
 }
+
+export interface TransactionStatsData {
+  totalTransactions: number;
+  gross: number;
+  totalSuccessful: number;
+  totalPending: number;
+  totalFailed: number;
+}
+
+export interface TransactionStatsResponse {
+  message: string;
+  status: string;
+  data: TransactionStatsData;
+  success: boolean;
+}
+
+export interface AdminTransaction {
+  id: string;
+  businessId: string;
+  transactionReference: string;
+  transactionStatus: string;
+  amount: number;
+  createdAt: string;
+}
+
+export interface AdminTransactionsPage {
+  content: AdminTransaction[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+}
+
+export interface AdminAllTransactionsData {
+  data: AdminTransaction[] | AdminTransactionsPage;
+  numberOfPages: number;
+  numberOfItems: number;
+}
+
+export interface AdminAllTransactionsResponse {
+  message: string;
+  data: AdminAllTransactionsData;
+}
+
+export interface AdminAllTransactionsQuery {
+  page: number;
+  size: number;
+  status?: string;
+  search?: string;
+}

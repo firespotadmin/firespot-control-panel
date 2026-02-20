@@ -1,8 +1,7 @@
 import TopHeader from "@/layouts/transactions/top-header";
 import Header from "../../layouts/dashboard/header";
 import SideBar from "../../layouts/dashboard/sideBar";
-import BusinessCount from "@/layouts/business/business-count";
-import TabsSection from "@/layouts/business/tabs-section";
+import TransactionsSection from "@/layouts/transactions/transactions-section";
 
 const Transactions = () => {
   return (
@@ -18,8 +17,7 @@ const Transactions = () => {
         {/* Main Section (scrollable) */}
         <div className="flex-1 gap-[24px] p-6 overflow-y-auto flex-col bg-[#F4F6F8]">
           <TopHeader />
-          <BusinessCount />
-          <TabsSection />
+          <TransactionsSection />
         </div>
       </div>
     </div>

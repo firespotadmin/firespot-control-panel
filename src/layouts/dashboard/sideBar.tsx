@@ -1,6 +1,5 @@
 import LinkCompo from "@/components/common/dashboard/linkCompo";
 import {
-  Box1,
   Chart1,
   ChartCircle,
   I3DCubeScan,
@@ -54,12 +53,14 @@ const SideBar = () => {
         link="/transactions"
         active={isActive("/transactions")}
       />
+      {/*
       <LinkCompo
         icon={<Box1 />}
         text="Products"
         link="/products"
         active={isActive("/products")}
       />
+      */}
       <LinkCompo
         icon={<I3DCubeScan />}
         text="QR Kits"

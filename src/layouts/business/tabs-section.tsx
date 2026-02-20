@@ -82,7 +82,7 @@ const TabsSection = ({
         </TabsContent>
 
         <TabsContent value="qrkits" className="mt-0">
-          <QRKitsTab />
+          <QRKitsTab businessId={businessId} />
         </TabsContent>
 
         <TabsContent value="subscriptions" className="mt-0">

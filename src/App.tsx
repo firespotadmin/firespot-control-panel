@@ -12,6 +12,7 @@ import Customers from "./pages/customers";
 import BusinessView from "./pages/businesses/business";
 import Transactions from "./pages/transactions";
 import Products from "./pages/products";
+import Settings from "./pages/settings";
 import NotFound from "./pages/404/not-found";
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
         <Route path="/customers" element={<Customers />} />
         <Route path="/transactions" element={<Transactions />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
         <Route path="*" element={<NotFound />} />
     </Routes>

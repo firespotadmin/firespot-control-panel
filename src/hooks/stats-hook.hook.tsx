@@ -1,8 +1,10 @@
-import { getBusiness, getBusinessCharges, getBusinessFeedbacks, getBusinessProducts, getBusinessTransactions, getStats, getStatsBusiness, getStatsBusinessById } from "@/services/stats-service.service"
+import { getAllTransactions, getBusiness, getBusinessCharges, getBusinessFeedbacks, getBusinessProducts, getBusinessQrKits, getBusinessTransactions, getCustomers, getCustomerStats, getStats, getStatsBusiness, getStatsBusinessById, getTransactionStats } from "@/services/stats-service.service"
 import type { BusinessChargesQuery } from "@/types/charge";
+import type { CustomersQuery } from "@/types/customer";
 import type { BusinessFeedbackQuery } from "@/types/feedback";
 import type { BusinessProductsQuery } from "@/types/product";
-import type { BusinessTransactionsQuery } from "@/types/transaction";
+import type { BusinessQrKitsQuery } from "@/types/qr-kit";
+import type { AdminAllTransactionsQuery, BusinessTransactionsQuery } from "@/types/transaction";
 
 export const useGetStats = async ({
     fromDate,
@@ -73,5 +75,36 @@ export const useGetBusinessCharges = async (
     params: BusinessChargesQuery
 ) => {
     const response = await getBusinessCharges(params);
+    return response;
+}
+
+export const useGetBusinessQrKits = async (
+    params: BusinessQrKitsQuery
+) => {
+    const response = await getBusinessQrKits(params);
+    return response;
+}
+
+export const useGetCustomers = async (
+    params: CustomersQuery
+) => {
+    const response = await getCustomers(params);
+    return response;
+}
+
+export const useGetCustomerStats = async () => {
+    const response = await getCustomerStats();
+    return response;
+}
+
+export const useGetTransactionStats = async () => {
+    const response = await getTransactionStats();
+    return response;
+}
+
+export const useGetAllTransactions = async (
+    params: AdminAllTransactionsQuery
+) => {
+    const response = await getAllTransactions(params);
     return response;
 }
