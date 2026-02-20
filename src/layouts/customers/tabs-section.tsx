@@ -1,4 +1,8 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import OverviewTab from "../business/tabs/overview-tab";
+import CashflowTab from "../business/tabs/cashflow-tab";
+import SubscriptionsTab from "../business/tabs/subscriptions-tab";
+import KYBTab from "../business/tabs/kyb-tab";
 
 const TabsSection = () => {
   return (
@@ -31,7 +35,7 @@ const TabsSection = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* <TabsContent value="overview" className="mt-0">
+        <TabsContent value="overview" className="mt-0">
           <OverviewTab />
         </TabsContent>
 
@@ -45,7 +49,7 @@ const TabsSection = () => {
 
         <TabsContent value="kyb" className="mt-0">
           <KYBTab />
-        </TabsContent> */}
+        </TabsContent>
       </Tabs>
     </div>
   );

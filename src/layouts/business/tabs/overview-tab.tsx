@@ -88,6 +88,20 @@ const OverviewTab = () => {
 };
 
 const DataTable = ({ data }: { data: Business[] }) => {
+  const renderVerificationIcon = (verified: boolean | null | undefined) => {
+    if (verified) {
+      return <img src="/verified.png" alt="Verified" className="px-2" />;
+    }
+
+    if (verified === false) {
+      return (
+        <img src="/not-verified.png" alt="Not Verified" className="px-2" />
+      );
+    }
+
+    return <img src="/cancel.png" alt="Cancelled" className="px-2" />;
+  };
+
   const formatRating = (rating: number | null | undefined) => {
     if (rating === null || rating === undefined || isNaN(rating)) {
       return "N/A";
@@ -137,25 +151,13 @@ const DataTable = ({ data }: { data: Business[] }) => {
       <TableBody>
         {data.map((business: Business) => (
           <TableRow
-            className="cursor-pointer"
+            className="cursor-pointer bg-white"
             onClick={() => {
               navigate(`/business/${business.id}`);
             }}
             key={business?.id || business?.firespotId || Math.random()}
           >
-            <TableCell>
-              {business?.verified ? (
-                <img src="/verified.png" alt="Verified" className="px-2" />
-              ) : business?.verified === false ? (
-                <img
-                  src="/not-verified.png"
-                  alt="Not Verified"
-                  className="px-2"
-                />
-              ) : (
-                <img src="/cancel.png" alt="Verified" className="px-2" />
-              )}
-            </TableCell>
+            <TableCell>{renderVerificationIcon(business?.verified)}</TableCell>
             <TableCell>
               <img
                 src={getBusinessImage(business)}

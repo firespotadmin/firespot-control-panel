@@ -2,7 +2,7 @@ import TopHeader from "@/layouts/business/top-header";
 import Header from "../../layouts/dashboard/header";
 import SideBar from "../../layouts/dashboard/sideBar";
 import BusinessCount from "@/layouts/business/business-count";
-import TabsSection from "@/layouts/business/tabs-section";
+import TabsSection from "@/layouts/customers/tabs-section";
 
 const Businesses = () => {
   return (
