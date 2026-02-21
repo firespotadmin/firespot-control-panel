@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PasswordInput from "@/components/ui/password-input";
 import { useLogin } from "@/hooks/auth-hook.hook";
+import { saveAuthSession } from "@/lib/auth-storage";
 import { loginSchema } from "@/schema/auth-schema";
 import { Field, Form, Formik } from "formik";
 import { InfoCircle } from "iconsax-reactjs";
@@ -60,7 +61,10 @@ const LoginPage = () => {
                                 }
 
                                 if (response?.success) {
-                                    localStorage.setItem("token", response?.data?.token);
+                                    saveAuthSession({
+                                        token: response?.data?.token,
+                                        user: response?.data?.user,
+                                    });
                                     navigate("/dashboard");
                                 }
                             } catch (error: any) {

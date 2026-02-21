@@ -42,6 +42,19 @@ export interface AdminData {
   password: string; // usually hashed
   profileImageUrl?: string;
 }
+
+export interface AuthUser {
+  id: string;
+  createdAt?: string;
+  updatedAt?: string;
+  emailAddress: string;
+  role: Role;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  isActive?: boolean;
+  profileImageUrl?: string;
+}
 // types.ts
 export interface VerifyOtpRequest {
   email: string;

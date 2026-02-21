@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearAuthSession } from "@/lib/auth-storage";
 
 // ✅ Secured instance with token for authenticated requests
 const axiosInstance = axios.create({
@@ -34,7 +35,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Handle expired/invalid token
-      localStorage.removeItem("access_token");
+      clearAuthSession();
       window.location.href = "/login"; // or use navigate("/login")
     }
     return Promise.reject(error);

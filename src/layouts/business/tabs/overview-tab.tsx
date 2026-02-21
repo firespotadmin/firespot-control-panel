@@ -1,5 +1,6 @@
 import FilterCompo from "@/components/common/business/filter-compo";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Add, Copy } from "iconsax-reactjs";
+import { Add, Copy, SearchNormal1 } from "iconsax-reactjs";
 import { getBusiness } from "@/services/stats-service.service";
 import { useEffect, useState } from "react";
 import type { Business } from "@/types/business";
@@ -16,22 +17,70 @@ import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 
 const OverviewTab = () => {
+  const ITEMS_PER_PAGE = 10;
   const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setPage(0);
+  }, [search]);
 
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await getBusiness({});
+        const response = await getBusiness({
+          search,
+          page,
+          size: ITEMS_PER_PAGE,
+        });
 
-        if (response?.success) {
-          const businessData = response?.data || [];
-          setBusinesses(Array.isArray(businessData) ? businessData : []);
+        if (response?.message === "No businesses") {
+          setBusinesses([]);
+          setTotalPages(1);
+          setTotalItems(0);
+          return;
+        }
+
+        const payload = response?.data || response;
+        const nestedData = payload?.data;
+        const listCandidates = [
+          nestedData?.data?.content,
+          nestedData?.data,
+          payload?.data?.content,
+          payload?.content,
+          payload?.data,
+        ];
+        const list = (listCandidates.find((candidate) =>
+          Array.isArray(candidate),
+        ) || []) as Business[];
+
+        if (response?.success || Array.isArray(list)) {
+          setBusinesses(list);
+          setTotalPages(
+            nestedData?.numberOfPages ||
+              nestedData?.data?.totalPages ||
+              payload?.numberOfPages ||
+              payload?.totalPages ||
+              1,
+          );
+          setTotalItems(
+            nestedData?.numberOfItems ||
+              nestedData?.data?.totalElements ||
+              payload?.numberOfItems ||
+              payload?.totalElements ||
+              list.length,
+          );
         } else {
           setBusinesses([]);
+          setTotalPages(1);
+          setTotalItems(0);
           if (response?.message) {
             setError(response.message);
           }
@@ -39,6 +88,8 @@ const OverviewTab = () => {
       } catch (err: any) {
         console.error("Error fetching businesses:", err);
         setBusinesses([]);
+        setTotalPages(1);
+        setTotalItems(0);
         const errorMessage =
           err?.response?.data?.message ||
           err?.message ||
@@ -50,7 +101,10 @@ const OverviewTab = () => {
     };
 
     fetchBusinesses();
-  }, []);
+  }, [page, search]);
+
+  const startIndex = totalItems === 0 ? 0 : page * ITEMS_PER_PAGE + 1;
+  const endIndex = Math.min((page + 1) * ITEMS_PER_PAGE, totalItems);
 
   return (
     <div className="">
@@ -59,6 +113,22 @@ const OverviewTab = () => {
         <FilterCompo data={"ALL STATUS"} />
         <FilterCompo data={"ALL INDUSTRIES"} />
         <FilterCompo data={"ALL LOCATIONS"} />
+
+        <div className="relative ml-auto w-[320px]">
+          <SearchNormal1
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+          />
+          <Input
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(0);
+            }}
+            placeholder="Search business names or FSiD"
+            className="pl-9 h-9 rounded-full bg-[#F9FAFB] border-[#E5E7EB]"
+          />
+        </div>
       </div>
 
       <div
@@ -67,7 +137,7 @@ const OverviewTab = () => {
         } mt-5 rounded-2xl`}
       >
         {loading ? (
-          <div className="p-8 text-center">
+          <div className="py-8 text-center">
             <div className="flex justify-center">
               <Loader className="animate-spin" />
             </div>
@@ -78,9 +148,49 @@ const OverviewTab = () => {
             <p className="text-red-600">{error}</p>
           </div>
         ) : businesses.length === 0 ? (
-          <NotFound />
+          search.trim() ? (
+            <div className="p-8 text-center">
+              <p className="text-gray-600">No businesses match your search.</p>
+            </div>
+          ) : (
+            <NotFound />
+          )
         ) : (
-          <DataTable data={businesses} />
+          <>
+            <DataTable data={businesses} />
+            <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 bg-white rounded-b-2xl">
+              <p className="text-[12px] text-[#6B7280]">
+                Showing {startIndex} - {endIndex} of {totalItems}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-8 px-3 text-[12px]"
+                  disabled={page === 0}
+                  onClick={() => setPage((prev) => Math.max(0, prev - 1))}
+                >
+                  Previous
+                </Button>
+                <p className="text-[12px] text-[#6B7280]">
+                  Page {page + 1} of {Math.max(totalPages, 1)}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-8 px-3 text-[12px]"
+                  disabled={page >= totalPages - 1}
+                  onClick={() =>
+                    setPage((prev) =>
+                      Math.min(prev + 1, Math.max(totalPages - 1, 0)),
+                    )
+                  }
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -151,7 +261,7 @@ const DataTable = ({ data }: { data: Business[] }) => {
       <TableBody>
         {data.map((business: Business) => (
           <TableRow
-            className="cursor-pointer bg-white"
+            className="cursor-pointer bg-white font-medium"
             onClick={() => {
               navigate(`/business/${business.id}`);
             }}
@@ -175,7 +285,7 @@ const DataTable = ({ data }: { data: Business[] }) => {
             <TableCell>
               {formatAddress(business?.businessMainAddress)}
             </TableCell>
-            <TableCell>
+            <TableCell className="px-10">
               {business?.numberOfBranches
                 ? parseInt(business.numberOfBranches) || 0
                 : 0}
@@ -196,12 +306,20 @@ const DataTable = ({ data }: { data: Business[] }) => {
               </div>
             </TableCell>
             <TableCell>{business?.industry || "N/A"}</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-5">
-                {business?.firespotId || "N/A"}
-                {business?.firespotId && <Copy size={20} />}
+            <TableCell className="uppercase">
+              <div className="flex items-center gap-3">
+                <span
+                  className="w-[120px] truncate font-mono"
+                  title={business?.firespotId?.substring(5) || "Not Available"}
+                >
+                  {business?.firespotId?.substring(5) || "Not Available"}
+                </span>
+                {business?.firespotId && (
+                  <Copy size={20} className="shrink-0" />
+                )}
               </div>
             </TableCell>
+            <TableCell></TableCell>
           </TableRow>
         ))}
       </TableBody>
