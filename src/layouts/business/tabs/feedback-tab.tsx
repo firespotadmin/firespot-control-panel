@@ -59,7 +59,7 @@ const FeedbackTab = ({ businessId }: { businessId?: string }) => {
         setError(
           err?.response?.data?.message ||
             err?.message ||
-            "Failed to load feedbacks"
+            "Failed to load feedbacks",
         );
       } finally {
         setLoading(false);
@@ -69,7 +69,10 @@ const FeedbackTab = ({ businessId }: { businessId?: string }) => {
     fetchFeedbacks();
   }, [businessId]);
 
-  const monthList = useMemo(() => Object.keys(feedbacksByMonth), [feedbacksByMonth]);
+  const monthList = useMemo(
+    () => Object.keys(feedbacksByMonth),
+    [feedbacksByMonth],
+  );
   const visibleMonths = selectedMonth ? [selectedMonth] : monthList;
 
   const renderStars = (rating: number) => {
@@ -79,7 +82,7 @@ const FeedbackTab = ({ businessId }: { businessId?: string }) => {
 
   return (
     <div className="w-full py-6">
-      <div className="bg-white rounded-lg p-6 shadow-sm">
+      <div className="rounded-lg p-6 shadow-sm">
         <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">
             <FilterCompo data="ALL TIME" />
@@ -145,18 +148,18 @@ const FeedbackTab = ({ businessId }: { businessId?: string }) => {
                           key={item.feedBackId}
                           className="border border-[#E5E7EB] rounded-xl p-4 bg-white"
                         >
-                          <div className="flex items-start gap-3">
+                          <div className="flex items-center gap-3">
                             <img
                               src={item.profilePictureUrl || "/main-logo.png"}
                               alt={item.customerName || "Customer"}
-                              className="w-8 h-8 rounded-full object-cover"
+                              className="w-15 h-15 rounded-full object-cover"
                             />
                             <div>
-                              <p className="text-[13px] font-[700] text-[#111827]">
+                              <p className="text-[15px] font-[700] text-[#111827]">
                                 {item.customerName || "Anonymous"}
                               </p>
                               <div className="flex items-center gap-2">
-                                <div className="text-[#F59E0B] text-[12px] tracking-[1px]">
+                                <div className="text-[#F59E0B] text-[20px] tracking-[1px]">
                                   {renderStars(item.rating)}
                                 </div>
                                 <p className="text-[11px] text-[#9CA3AF]">
@@ -165,7 +168,7 @@ const FeedbackTab = ({ businessId }: { businessId?: string }) => {
                               </div>
                             </div>
                           </div>
-                          <p className="text-[13px] text-[#374151] leading-[20px] mt-3">
+                          <p className="text-[15px] font-medium text-[#374151] leading-[20px] mt-3">
                             {item.comment || "No comment"}
                           </p>
                         </article>

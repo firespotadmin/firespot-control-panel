@@ -21,12 +21,38 @@ export interface BusinessTransaction {
   refundedAt: string | null;
 }
 
+export interface BusinessTransactionStore {
+  id: string;
+  name?: string;
+  businessId?: string;
+  address?: {
+    state?: string;
+    city?: string;
+    address?: string;
+  };
+}
+
+export interface BusinessTransactionCustomer {
+  id?: string;
+  userId?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  profilePictureUrl?: string;
+}
+
+export interface BusinessTransactionItem {
+  store?: BusinessTransactionStore | null;
+  transaction: BusinessTransaction;
+  customer?: BusinessTransactionCustomer | null;
+}
+
 export interface BusinessTransactionsResponse {
   message: string;
   status: string;
   data: {
     totalPages: number;
-    content: BusinessTransaction[];
+    content: BusinessTransactionItem[];
     currentPage: number;
     totalElements: number;
   };

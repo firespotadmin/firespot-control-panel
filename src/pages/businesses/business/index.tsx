@@ -44,8 +44,15 @@ const BusinessView = () => {
 
         {/* Main Section (scrollable) */}
         <div className="flex-1 gap-[24px] p-10 overflow-y-auto flex-col bg-[#F4F6F8]">
-          <div className="flex items-center gap-5">
-            <p className="text-[#9CA3AF] text-[12px]">All Business</p>
+          <div className="flex items-center gap-5 cursor-pointer">
+            <p
+              onClick={() => {
+                window.history.back();
+              }}
+              className="text-[#9CA3AF] text-[12px]"
+            >
+              All Business
+            </p>
             <ArrowRight2 size={15} />
             <p className="capitalize text-[12px]">
               {business?.businessName || "N/A"}

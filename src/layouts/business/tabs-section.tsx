@@ -54,7 +54,7 @@ const TabsSection = ({
         </TabsList>
 
         <TabsContent value="about" className="mt-0">
-          <AboutTab />
+          <AboutTab business={business} />
         </TabsContent>
 
         <TabsContent value="transactions" className="mt-0">
