@@ -19,7 +19,6 @@ import {
   SearchNormal1,
   TickCircle,
   CloseCircle,
-  Clock,
 } from "iconsax-reactjs";
 import { useEffect, useState } from "react";
 
@@ -170,7 +169,16 @@ const TransactionsTab = ({ businessId }: { businessId?: string }) => {
       return <TickCircle size={18} color="#22C55E" variant="Bold" />;
     if (status === "FAILED")
       return <CloseCircle size={18} color="#EF4444" variant="Bold" />;
-    return <Clock size={18} color="#9CA3AF" variant="Bold" />;
+
+    if (
+      status === "PROCESSING" ||
+      status === "PAYMENT_IN_PROGRESS" ||
+      status === "PAYMENT_INITIATED"
+    ) {
+      return <img src="/loading.png" alt="Processing" className="w-[18px] h-[18px]" />;
+    }
+
+    return <img src="/label.png" alt="Pending" className="w-[18px] h-[18px]" />;
   };
 
   const getCustomerDisplayName = (

@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, SearchNormal1 } from "iconsax-reactjs";
+import { ArrowLeft2, ArrowRight2, Copy, SearchNormal1 } from "iconsax-reactjs";
 import CustomerFilterChip from "@/components/common/customers/filter-chip";
 import NoCustomersState from "./no-customers-state";
 import { useGetCustomers } from "@/hooks/stats-hook.hook";
@@ -34,7 +34,6 @@ const TabsSection = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -111,7 +110,6 @@ const TabsSection = () => {
         if (hasBackendPagination) {
           setCustomers(mapped);
           setTotalPages(backendTotalPages || 1);
-          setTotalItems(backendTotalItems || mapped.length);
         } else {
           const calculatedTotalItems = mapped.length;
           const calculatedTotalPages = Math.max(
@@ -121,13 +119,11 @@ const TabsSection = () => {
           const start = page * PAGE_SIZE;
 
           setCustomers(mapped.slice(start, start + PAGE_SIZE));
-          setTotalItems(calculatedTotalItems);
           setTotalPages(calculatedTotalPages);
         }
       } catch (err: any) {
         setCustomers([]);
         setTotalPages(1);
-        setTotalItems(0);
         setError(
           err?.response?.data?.message || err?.message || "Failed to fetch customers"
         );
@@ -143,8 +139,26 @@ const TabsSection = () => {
     setPage(0);
   }, [search]);
 
-  const startIndex = totalItems === 0 ? 0 : page * PAGE_SIZE + 1;
-  const endIndex = Math.min((page + 1) * PAGE_SIZE, totalItems);
+  const getPageItems = () => {
+    const total = Math.max(totalPages, 1);
+    const current = page + 1;
+
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, index) => index + 1);
+    }
+
+    if (current <= 4) {
+      return [1, 2, 3, "...", total - 2, total - 1, total];
+    }
+
+    if (current >= total - 3) {
+      return [1, 2, 3, "...", total - 2, total - 1, total];
+    }
+
+    return [1, "...", current - 1, current, current + 1, "...", total];
+  };
+
+  const pageItems = getPageItems();
 
   return (
     <div className="w-full pt-7">
@@ -170,7 +184,11 @@ const TabsSection = () => {
         </div>
       </div>
 
-      <div className="mt-4 bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
+      <div
+        className={`${
+          customers.length > 0 ? "border-[1px] border-gray-200" : "mt-4"
+        } mt-4 rounded-2xl bg-white overflow-hidden`}
+      >
         {loading ? (
           <div className="p-8 text-center">
             <div className="flex justify-center">
@@ -184,10 +202,10 @@ const TabsSection = () => {
           <NoCustomersState />
         ) : (
           <>
-            <Table>
+            <Table className="[&_th]:h-[52px] [&_th]:px-4 [&_td]:px-4 [&_td]:py-3">
               <TableHeader>
-                <TableRow>
-                  <TableHead></TableHead>
+                <TableRow className="">
+                  <TableHead className="h-[52px]"></TableHead>
                   <TableHead>Customer Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
@@ -201,18 +219,18 @@ const TabsSection = () => {
               </TableHeader>
               <TableBody>
                 {customers.map((item) => (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.id} className="bg-white font-medium">
                     <TableCell>
-                      <img src="/verified.png" alt="verified" className="w-4 h-4" />
+                      <img src="/verified.png" alt="verified" className="px-2" />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <img
                           src={item.logo}
                           alt={item.customerName}
-                          className="w-8 h-8 rounded-full object-cover"
+                          className="w-[36px] h-[36px] rounded-full object-cover"
                         />
-                        <span className="text-[14px]">{item.customerName}</span>
+                        <span className="text-[14px] capitalize">{item.customerName}</span>
                       </div>
                     </TableCell>
                     <TableCell>{item.email}</TableCell>
@@ -223,40 +241,67 @@ const TabsSection = () => {
                     <TableCell>{item.businessId}</TableCell>
                     <TableCell>{item.storeId}</TableCell>
                     <TableCell>
-                      <Copy size={16} color="#9CA3AF" />
+                      <div className="flex items-center gap-3">
+                        <Copy size={16} color="#9CA3AF" className="shrink-0" />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
 
-            <div className="flex items-center justify-between border-t border-[#E5E7EB] px-4 py-3 text-[14px] text-[#6B7280]">
-              <span>
-                Showing {startIndex} - {endIndex} of {totalItems}
-              </span>
+            <div className="flex items-center justify-between border-t border-gray-200 px-4 py-4 bg-white rounded-b-2xl text-[14px] text-[#6B7280]">
+              <button
+                type="button"
+                className="flex items-center gap-2 disabled:opacity-40"
+                onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                disabled={page === 0}
+              >
+                <ArrowLeft2 size={16} />
+                Previous
+              </button>
+
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="disabled:opacity-40"
-                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                  disabled={page === 0}
-                >
-                  Previous
-                </button>
-                <span>
-                  Page {page + 1} of {Math.max(totalPages, 1)}
-                </span>
-                <button
-                  type="button"
-                  className="disabled:opacity-40"
-                  onClick={() =>
-                    setPage((prev) => Math.min(prev + 1, Math.max(totalPages - 1, 0)))
+                {pageItems.map((item, index) => {
+                  if (item === "...") {
+                    return (
+                      <span key={`ellipsis-${index}`} className="px-2 text-[#9CA3AF]">
+                        ...
+                      </span>
+                    );
                   }
-                  disabled={page >= totalPages - 1}
-                >
-                  Next
-                </button>
+
+                  const pageNumber = item as number;
+                  const isActive = pageNumber === page + 1;
+
+                  return (
+                    <button
+                      key={pageNumber}
+                      type="button"
+                      onClick={() => setPage(pageNumber - 1)}
+                      className={`h-8 w-8 rounded-full text-[13px] transition-colors ${
+                        isActive
+                          ? "bg-[#E5E7EB] text-[#111827] font-[600]"
+                          : "text-[#6B7280] hover:bg-[#F3F4F6]"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
               </div>
+
+              <button
+                type="button"
+                className="flex items-center gap-2 disabled:opacity-40"
+                onClick={() =>
+                  setPage((prev) => Math.min(prev + 1, Math.max(totalPages - 1, 0)))
+                }
+                disabled={page >= totalPages - 1}
+              >
+                Next
+                <ArrowRight2 size={16} />
+              </button>
             </div>
           </>
         )}

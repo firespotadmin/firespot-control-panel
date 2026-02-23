@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import ColorBox from "@/components/common/dashboard/color-box";
 import { ArrowLeft2, ArrowRight2, CloseCircle, Copy, TickCircle } from "iconsax-reactjs";
 import { SearchNormal1 } from "iconsax-reactjs";
 import CustomerFilterChip from "@/components/common/customers/filter-chip";
@@ -45,6 +46,14 @@ const getStatusIcon = (status: string) => {
 
   if (status === "FAILED" || status === "EXPIRED") {
     return <CloseCircle size={18} color="#E11D48" variant="Bold" />;
+  }
+
+  if (
+    status === "PROCESSING" ||
+    status === "PAYMENT_IN_PROGRESS" ||
+    status === "PAYMENT_INITIATED"
+  ) {
+    return <img src="/loading.png" alt="Processing" className="w-[18px] h-[18px]" />;
   }
 
   return <img src="/label.png" alt="Pending" className="w-[18px] h-[18px]" />;
@@ -91,7 +100,6 @@ const TransactionsSection = () => {
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -130,7 +138,6 @@ const TransactionsSection = () => {
         if (response?.message === "No transactions") {
           setTransactions([]);
           setTotalPages(1);
-          setTotalItems(0);
           return;
         }
 
@@ -163,17 +170,9 @@ const TransactionsSection = () => {
             payload?.totalPages ||
             1
         );
-        setTotalItems(
-          nestedData?.numberOfItems ||
-            nestedData?.data?.totalElements ||
-            payload?.numberOfItems ||
-            payload?.totalElements ||
-            0
-        );
       } catch (err: any) {
         setTransactions([]);
         setTotalPages(1);
-        setTotalItems(0);
         setError(err?.message || "Failed to fetch transactions");
       } finally {
         setIsLoading(false);
@@ -183,43 +182,56 @@ const TransactionsSection = () => {
     fetchTransactions();
   }, [page, statusFilter, search]);
 
+  const getPageItems = () => {
+    const total = Math.max(totalPages, 1);
+    const current = page + 1;
+
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, index) => index + 1);
+    }
+
+    if (current <= 4) {
+      return [1, 2, 3, "...", total - 2, total - 1, total];
+    }
+
+    if (current >= total - 3) {
+      return [1, 2, 3, "...", total - 2, total - 1, total];
+    }
+
+    return [1, "...", current - 1, current, current + 1, "...", total];
+  };
+
+  const pageItems = getPageItems();
+
   return (
     <div className="pt-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3 pb-5 border-b border-[#E5E7EB]">
-        <div className="xl:col-span-2 bg-[#fff] rounded-[12px] p-4">
-          <p className="text-[12px] text-[#6B7280]">Gross Merchandise Volume</p>
-          <h3 className="text-[42px] leading-[1.1] font-[700] text-[#111827]">
-            {formatAmount(transactionStats.gross)}
-          </h3>
-        </div>
-
-        <div className="bg-[#fff] rounded-[12px] p-4">
-          <p className="text-[12px] text-[#6B7280]">Total Transactions</p>
-          <h3 className="text-[48px] leading-[1.1] font-[700] text-[#111827]">
-            {transactionStats.totalTransactions}
-          </h3>
-        </div>
-
-        <div className="bg-[#fff] rounded-[12px] p-4">
-          <p className="text-[12px] text-[#6B7280]">Successful Transactions</p>
-          <h3 className="text-[48px] leading-[1.1] font-[700] text-[#111827]">
-            {transactionStats.totalSuccessful}
-          </h3>
-        </div>
-
-        <div className="bg-[#fff] rounded-[12px] p-4">
-          <p className="text-[12px] text-[#6B7280]">Pending Transactions</p>
-          <h3 className="text-[48px] leading-[1.1] font-[700] text-[#F59E0B]">
-            {transactionStats.totalPending}
-          </h3>
-        </div>
-
-        <div className="bg-[#fff] rounded-[12px] p-4">
-          <p className="text-[12px] text-[#6B7280]">Failed Transactions</p>
-          <h3 className="text-[48px] leading-[1.1] font-[700] text-[#F43F5E]">
-            {transactionStats.totalFailed}
-          </h3>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3 pb-5 border-b border-[#E5E7EB]">
+        <ColorBox
+          color="#111827"
+          count={formatAmount(transactionStats.gross)}
+          label="Gross Merchandise Volume"
+          fontSize="42px"
+        />
+        <ColorBox
+          color="#111827"
+          count={String(transactionStats.totalTransactions || 0)}
+          label="Total Transactions"
+        />
+        <ColorBox
+          color="#111827"
+          count={String(transactionStats.totalSuccessful || 0)}
+          label="Successful Transactions"
+        />
+        <ColorBox
+          color="#F59E0B"
+          count={String(transactionStats.totalPending || 0)}
+          label="Pending Transactions"
+        />
+        <ColorBox
+          color="#F43F5E"
+          count={String(transactionStats.totalFailed || 0)}
+          label="Failed Transactions"
+        />
       </div>
 
       <div className="pt-4 flex items-center justify-between gap-3 flex-wrap">
@@ -278,8 +290,8 @@ const TransactionsSection = () => {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] overflow-hidden">
-            <Table>
+          <div className="bg-white rounded-2xl border mt-5 border-[#E5E7EB] overflow-hidden">
+            <Table className="[&_th]:h-[52px] [&_th]:px-4 [&_td]:px-4 [&_td]:py-3">
               <TableHeader>
                 <TableRow>
                   <TableHead></TableHead>
@@ -311,31 +323,53 @@ const TransactionsSection = () => {
             </Table>
           </div>
 
-          <div className="flex items-center justify-between pt-5 text-[#6B7280] text-[14px]">
+          <div className="flex items-center justify-between pt-5 px-1 text-[#6B7280] text-[12px]">
             <button
-              className="flex items-center gap-2 disabled:opacity-40"
+              className="flex items-center gap-2 font-[500] disabled:opacity-40"
               onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
               disabled={page === 0}
             >
-              <ArrowLeft2 size={16} />
+              <ArrowLeft2 size={14} />
               Previous
             </button>
 
-            <div className="flex items-center gap-4">
-              <span>
-                Page {page + 1} of {Math.max(totalPages, 1)}
-              </span>
-              <span>•</span>
-              <span>{totalItems} total</span>
+            <div className="flex items-center gap-1">
+              {pageItems.map((item, index) => {
+                if (item === "...") {
+                  return (
+                    <span key={`ellipsis-${index}`} className="px-2 text-[#9CA3AF] font-[500]">
+                      ...
+                    </span>
+                  );
+                }
+
+                const pageNumber = item as number;
+                const isActive = pageNumber === page + 1;
+
+                return (
+                  <button
+                    key={pageNumber}
+                    type="button"
+                    onClick={() => setPage(pageNumber - 1)}
+                    className={`h-8 w-8 rounded-full text-[12px] font-[500] transition-colors ${
+                      isActive
+                        ? "bg-[#E5E7EB] text-[#111827]"
+                        : "text-[#6B7280] hover:bg-[#F3F4F6]"
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              })}
             </div>
 
             <button
-              className="flex items-center gap-2 disabled:opacity-40"
+              className="flex items-center gap-2 font-[500] disabled:opacity-40"
               onClick={() => setPage((prev) => Math.min(prev + 1, Math.max(totalPages - 1, 0)))}
               disabled={page >= totalPages - 1}
             >
               Next
-              <ArrowRight2 size={16} />
+              <ArrowRight2 size={14} />
             </button>
           </div>
         </>
