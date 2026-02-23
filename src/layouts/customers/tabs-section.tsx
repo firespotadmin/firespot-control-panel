@@ -29,8 +29,12 @@ type CustomerTableRow = {
 };
 
 const TabsSection = () => {
+  const PAGE_SIZE = 10;
   const [customers, setCustomers] = useState<CustomerTableRow[]>([]);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,16 +45,24 @@ const TabsSection = () => {
         setError(null);
 
         const response = await useGetCustomers({
-          from: "2024-01-01",
-          to: "2024-12-31",
-          status: "",
           search,
-          page: 0,
-          size: 10,
+          page,
+          size: PAGE_SIZE,
         });
 
-        const payload = response?.data?.data || response?.data || response;
-        const data = (Array.isArray(payload) ? payload : []) as CustomerRecord[];
+        const payload = response;
+        const nestedData = payload?.data;
+        const listCandidates = [
+          nestedData,
+          nestedData?.content,
+          nestedData?.data,
+          payload?.content,
+          payload?.data,
+          payload,
+        ];
+        const data =
+          ((listCandidates.find((candidate) => Array.isArray(candidate)) ||
+            []) as CustomerRecord[]);
 
         const mapped = data.map((item) => {
           const fullName =
@@ -80,9 +92,42 @@ const TabsSection = () => {
           };
         });
 
-        setCustomers(mapped);
+        const backendTotalPages =
+          nestedData?.totalPages ||
+          nestedData?.numberOfPages ||
+          payload?.totalPages ||
+          payload?.numberOfPages;
+
+        const backendTotalItems =
+          nestedData?.totalElements ||
+          nestedData?.numberOfItems ||
+          payload?.totalElements ||
+          payload?.numberOfItems;
+
+        const hasBackendPagination =
+          typeof backendTotalPages === "number" ||
+          typeof backendTotalItems === "number";
+
+        if (hasBackendPagination) {
+          setCustomers(mapped);
+          setTotalPages(backendTotalPages || 1);
+          setTotalItems(backendTotalItems || mapped.length);
+        } else {
+          const calculatedTotalItems = mapped.length;
+          const calculatedTotalPages = Math.max(
+            1,
+            Math.ceil(calculatedTotalItems / PAGE_SIZE),
+          );
+          const start = page * PAGE_SIZE;
+
+          setCustomers(mapped.slice(start, start + PAGE_SIZE));
+          setTotalItems(calculatedTotalItems);
+          setTotalPages(calculatedTotalPages);
+        }
       } catch (err: any) {
         setCustomers([]);
+        setTotalPages(1);
+        setTotalItems(0);
         setError(
           err?.response?.data?.message || err?.message || "Failed to fetch customers"
         );
@@ -92,18 +137,17 @@ const TabsSection = () => {
     };
 
     fetchCustomers();
+  }, [search, page]);
+
+  useEffect(() => {
+    setPage(0);
   }, [search]);
+
+  const startIndex = totalItems === 0 ? 0 : page * PAGE_SIZE + 1;
+  const endIndex = Math.min((page + 1) * PAGE_SIZE, totalItems);
 
   return (
     <div className="w-full pt-7">
-      <div className="w-full border-b border-gray-200 pb-3">
-        <div className="flex items-center gap-8 text-[14px]">
-          <button className="border-b-2 border-black pb-2 font-[500]">Overview</button>
-          <button className="text-[#00000080] pb-2">Cashflow</button>
-          <button className="text-[#00000080] pb-2">KYC</button>
-        </div>
-      </div>
-
       <div className="pt-4 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex gap-2 flex-wrap">
           <CustomerFilterChip label="ALL TIME" />
@@ -139,51 +183,82 @@ const TabsSection = () => {
         ) : customers.length === 0 ? (
           <NoCustomersState />
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead></TableHead>
-                <TableHead>Customer Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Roles</TableHead>
-                <TableHead>Joined on</TableHead>
-                <TableHead>Business ID</TableHead>
-                <TableHead>Store ID</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {customers.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
-                    <img src="/verified.png" alt="verified" className="w-4 h-4" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={item.logo}
-                        alt={item.customerName}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                      <span className="text-[14px]">{item.customerName}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{item.email}</TableCell>
-                  <TableCell>{item.phone}</TableCell>
-                  <TableCell>{item.status}</TableCell>
-                  <TableCell>{item.roles}</TableCell>
-                  <TableCell>{item.joinedOn}</TableCell>
-                  <TableCell>{item.businessId}</TableCell>
-                  <TableCell>{item.storeId}</TableCell>
-                  <TableCell>
-                    <Copy size={16} color="#9CA3AF" />
-                  </TableCell>
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead></TableHead>
+                  <TableHead>Customer Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Roles</TableHead>
+                  <TableHead>Joined on</TableHead>
+                  <TableHead>Business ID</TableHead>
+                  <TableHead>Store ID</TableHead>
+                  <TableHead></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {customers.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>
+                      <img src="/verified.png" alt="verified" className="w-4 h-4" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={item.logo}
+                          alt={item.customerName}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        <span className="text-[14px]">{item.customerName}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.phone}</TableCell>
+                    <TableCell>{item.status}</TableCell>
+                    <TableCell>{item.roles}</TableCell>
+                    <TableCell>{item.joinedOn}</TableCell>
+                    <TableCell>{item.businessId}</TableCell>
+                    <TableCell>{item.storeId}</TableCell>
+                    <TableCell>
+                      <Copy size={16} color="#9CA3AF" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            <div className="flex items-center justify-between border-t border-[#E5E7EB] px-4 py-3 text-[14px] text-[#6B7280]">
+              <span>
+                Showing {startIndex} - {endIndex} of {totalItems}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="disabled:opacity-40"
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                  disabled={page === 0}
+                >
+                  Previous
+                </button>
+                <span>
+                  Page {page + 1} of {Math.max(totalPages, 1)}
+                </span>
+                <button
+                  type="button"
+                  className="disabled:opacity-40"
+                  onClick={() =>
+                    setPage((prev) => Math.min(prev + 1, Math.max(totalPages - 1, 0)))
+                  }
+                  disabled={page >= totalPages - 1}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>

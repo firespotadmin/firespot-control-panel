@@ -146,7 +146,7 @@ const FeedbackTab = ({ businessId }: { businessId?: string }) => {
                       {feedbacksByMonth[month]?.map((item) => (
                         <article
                           key={item.feedBackId}
-                          className="border border-[#E5E7EB] rounded-xl p-4 bg-white"
+                          className="border border-[#E5E7EB] h-fit rounded-xl p-4 bg-white"
                         >
                           <div className="flex items-center gap-3">
                             <img
