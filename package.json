@@ -34,6 +34,7 @@
     "react-international-phone": "^4.6.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.4",
+    "recharts": "^3.7.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.14",
     "yup": "^1.7.1"
