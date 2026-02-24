@@ -1,5 +1,15 @@
-import { ArrowDown2 } from "iconsax-reactjs"
+import { ArrowDown2, Logout, Setting2, MessageNotif, ChartCircle } from "iconsax-reactjs";
 import { getStoredAuthUser } from "@/lib/auth-storage";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
+import { clearAuthSession } from "@/lib/auth-storage";
 
 const toReadableRole = (role?: string) => {
     if (!role) return "User";
@@ -13,24 +23,58 @@ const toReadableRole = (role?: string) => {
 
 const ProfileDropDown = () => {
     const user = getStoredAuthUser();
+    const navigate = useNavigate();
     const fullName = `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "User";
     const profileImage = user?.profileImageUrl || "fac.jpg";
 
+    const handleLogout = () => {
+        clearAuthSession();
+        navigate("/");
+    };
+
     return (
-        <div>
-            <div className="flex items-center gap-2 cursor-pointer">
-                <img className="w-[36px] h-[36px] object-cover rounded-full object-center" src={profileImage} alt={fullName} />
-                <div className="flex gap-5 items-center">
-                    <div className="">
-
-                        <p className="font-[700] text-[14px]">{fullName}</p>
-                        <p className="text-[12px] font-[500] text-[#6B7280]">{toReadableRole(user?.role)}</p>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 cursor-pointer">
+                    <img className="w-[36px] h-[36px] object-cover rounded-full object-center" src={profileImage} alt={fullName} />
+                    <div className="flex gap-5 items-center">
+                        <div>
+                            <p className="font-[700] text-[14px]">{fullName}</p>
+                            <p className="text-[12px] font-[500] text-[#6B7280]">{toReadableRole(user?.role)}</p>
+                        </div>
+                        <ArrowDown2 size={15} />
                     </div>
-                <ArrowDown2 size={15} />
-                </div>
-            </div>
-        </div>
-    )
-}
+                </button>
+            </DropdownMenuTrigger>
 
-export default ProfileDropDown
+            <DropdownMenuContent align="end" className="w-[220px]">
+                <DropdownMenuLabel>
+                    <p className="font-[700] text-[13px] text-[#111827]">{fullName}</p>
+                    <p className="text-[12px] font-[500] text-[#6B7280]">{user?.emailAddress || ""}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                    <ChartCircle size={16} />
+                    Overview
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/support")} className="cursor-pointer">
+                    <MessageNotif size={16} />
+                    Support
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer">
+                    <Setting2 size={16} />
+                    Settings
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-[#DC2626] focus:text-[#DC2626]">
+                    <Logout size={16} color="#DC2626" />
+                    Logout
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
+
+export default ProfileDropDown;
