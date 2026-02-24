@@ -14,6 +14,7 @@ import Transactions from "./pages/transactions";
 import Products from "./pages/products";
 import Settings from "./pages/settings";
 import Insights from "./pages/insights";
+import Support from "./pages/support";
 import NotFound from "./pages/404/not-found";
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/insights" element={<Insights />} />
         <Route path="/transactions" element={<Transactions />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/support" element={<Support />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
         <Route path="*" element={<NotFound />} />
