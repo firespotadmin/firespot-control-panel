@@ -7,12 +7,15 @@ import CheckMail from "./pages/auth/password/check-mail";
 import VerifyEmail from "./pages/auth/MFA";
 import Dashboard from "./pages/dashboard";
 import ProtectedRoute from "./pages/security/protected";
+import RoleGuard from "./pages/security/role-guard";
 import Businesses from "./pages/businesses";
 import Customers from "./pages/customers";
 import BusinessView from "./pages/businesses/business";
 import Transactions from "./pages/transactions";
 import Products from "./pages/products";
 import Settings from "./pages/settings";
+import AuditLogs from "./pages/settings/audit-logs";
+import UserRoles from "./pages/settings/user-roles";
 import Insights from "./pages/insights";
 import Support from "./pages/support";
 import NotFound from "./pages/404/not-found";
@@ -34,9 +37,32 @@ const App = () => {
         <Route path="/customers" element={<Customers />} />
         <Route path="/insights" element={<Insights />} />
         <Route path="/transactions" element={<Transactions />} />
-        <Route path="/products" element={<Products />} />
+        <Route
+          path="/products"
+          element={
+            <RoleGuard path="/products" fallback="/dashboard">
+              <Products />
+            </RoleGuard>
+          }
+        />
         <Route path="/support" element={<Support />} />
         <Route path="/settings" element={<Settings />} />
+        <Route
+          path="/settings/audit-logs"
+          element={
+            <RoleGuard path="/settings/audit-logs" fallback="/settings">
+              <AuditLogs />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/settings/user-roles"
+          element={
+            <RoleGuard path="/settings/user-roles" fallback="/settings">
+              <UserRoles />
+            </RoleGuard>
+          }
+        />
       </Route>
         <Route path="*" element={<NotFound />} />
     </Routes>

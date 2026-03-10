@@ -8,8 +8,8 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { API_CODE_SUCCESS } from "@/types/api";
 import { useResendOtp, useVerifyOtp } from "@/hooks/auth-hook.hook";
-import type { VerifyOtpResponse } from "@/types/auth";
 import toast, { Toaster } from "react-hot-toast";
 
 const VerifyEmail = () => {
@@ -75,15 +75,13 @@ const VerifyEmail = () => {
 
     setLoading(true);
 
-    const res = (await useVerifyOtp({
+    const response = await useVerifyOtp({
       data: { email, otp },
-    })) as VerifyOtpResponse;
+    });
 
     setLoading(false);
-    const response = res;
-    console.log(response);
-
-    if (response?.data?.isVerified) {
+    // Response shape: { code, message, data: { isVerified, token, ... } }
+    if (response?.code === API_CODE_SUCCESS && response?.data?.isVerified) {
       toast.success("Thank you", {
         icon: "✅",
         style: {
@@ -97,7 +95,7 @@ const VerifyEmail = () => {
         navigate("/");
       }, 1500);
     } else {
-      toast.error("OTP verification failed!", {
+      toast.error(response?.message || "OTP verification failed!", {
         icon: "❌",
         style: {
           borderRadius: "100px",

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PasswordInput from "@/components/ui/password-input";
 import { useLogin } from "@/hooks/auth-hook.hook";
+import { API_CODE_SUCCESS } from "@/types/api";
 import { saveAuthSession } from "@/lib/auth-storage";
 import { loginSchema } from "@/schema/auth-schema";
 import { Field, Form, Formik } from "formik";
@@ -49,29 +50,32 @@ const LoginPage = () => {
                             try {
                                 setErrorObject({});
                                 setLoading(true);
-                                const response: any = await useLogin({ data: values });
+                                const response = await useLogin({ data: values });
 
-                                // Example API response handling
-                                if (response?.data?.message === "There’s no account with this email address. Sign up to continue.") {
-                                    setErrorObject({ email: "There’s no account with this email address. Sign up to continue." });
-                                } else if (response?.data?.message === "The password entered is incorrect.") {
-                                    setErrorObject({ password: "The password entered is incorrect." });
-                                } else {
-                                    console.log(response?.data);
-                                }
-
-                                if (response?.success) {
+                                // Response shape: { code, message, data: { user, token } }
+                                if (response?.code === API_CODE_SUCCESS && response?.data) {
                                     saveAuthSession({
-                                        token: response?.data?.token,
-                                        user: response?.data?.user,
+                                        token: response.data.token,
+                                        user: response.data.user,
                                     });
                                     navigate("/dashboard");
+                                    return;
+                                }
+
+                                // Business error (e.g. wrong password, no account)
+                                const msg = response?.message ?? "";
+                                if (msg.includes("no account") || msg.includes("email address")) {
+                                    setErrorObject({ email: msg });
+                                } else if (msg.includes("password") || msg.includes("incorrect")) {
+                                    setErrorObject({ password: msg });
+                                } else {
+                                    setErrorObject({ general: msg || "Login failed." });
                                 }
                             } catch (error: any) {
-                                console.error(error);
-                                setErrorObject({
-                                    general: error?.response?.data?.message || "Something went wrong. Please try again.",
-                                });
+                                const msg =
+                                    error?.response?.data?.message ||
+                                    "Something went wrong. Please try again.";
+                                setErrorObject({ general: msg });
                             } finally {
                                 setLoading(false);
                             }

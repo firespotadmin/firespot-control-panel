@@ -2,15 +2,15 @@ import ColorBox from "@/components/common/dashboard/color-box";
 import type { BusinessStats } from "@/types/stats";
 
 interface DashboardContent3Props {
-  data: BusinessStats;
+  data?: BusinessStats | null;
 }
 
 const DashboardContent3 = ({ data }: DashboardContent3Props) => {
   return (
     <div>
-      <div>
-        <h1 className="font-bold text-[24px] py-5">Businesses</h1>
-        <div className="grid grid-cols-3 gap-5 pb-8">
+      <p className="text-[16px] font-[600] text-[#111827]">Businesses</p>
+      <p className="text-[13px] text-[#6B7280] mt-1">Sign ups, active, and statements generated.</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           <ColorBox
             count={
               ("+" + data?.newSignUps && data?.newSignUps?.toString()) || "0"
@@ -29,8 +29,6 @@ const DashboardContent3 = ({ data }: DashboardContent3Props) => {
             color="#000"
           />
         </div>
-        <hr />
-      </div>
     </div>
   );
 };

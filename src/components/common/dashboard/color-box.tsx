@@ -1,40 +1,35 @@
 const ColorBox = ({
-    label,
-    count,
-    color,
-    fontSize,
-    text
+  label,
+  count,
+  color,
+  fontSize,
+  text,
 }: {
-    label: string;
-    count: string;
-    color: string;
-    fontSize?: string;
-    text?: string;
+  label: string;
+  count: string;
+  color: string;
+  fontSize?: string;
+  text?: string;
 }) => {
+  if (!label) {
     return (
-        <div className="cursor-pointer">
-            {
-                label ?
-                    <div className="p-[16px] pb-0 border-[#F4F6F8] border-[.4px] shadow-lg bg-white rounded-[12px] w-full">
-                        <div className="flex items-center justify-between">
-                            <p className="text-[#00000066] leading-[16px] font-[500] text-[12px]">{label}</p>
-                            <p className="text-[12px] space-x-[-3px] font-semibold">{text}</p>
-                        </div>
-                        <p
-                            className="text-[48px] font-bold"
-                            style={{
-                                color: color, fontSize: fontSize,
-                            }}
-                        >
-                            {count}
-                        </p>
-                    </div>
-                    : <div className="bg-[#00000005] w-full rounded-[12px] p-[16px] flex flex-col h-full">
-
-                    </div>
-            }
-        </div>
+      <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-4 w-full min-h-[100px]" />
     );
+  }
+  return (
+    <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-4 w-full">
+      <div className="flex items-center justify-between">
+        <p className="text-[13px] text-[#6B7280]">{label}</p>
+        {text ? <p className="text-[12px] font-[600] text-[#111827]">{text}</p> : null}
+      </div>
+      <p
+        className="text-[28px] font-[700] text-[#111827] mt-1"
+        style={{ color, fontSize: fontSize ?? undefined }}
+      >
+        {count}
+      </p>
+    </div>
+  );
 };
 
 export default ColorBox;

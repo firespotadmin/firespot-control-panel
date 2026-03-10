@@ -18,6 +18,30 @@ export interface PlatformStats {
   transactions: TransactionStats;
   customers: CustomerStats;
   feedback: FeedbackStats;
+  /** Optional: when backend provides support stats */
+  support?: SupportStats;
+  /** Optional: when backend provides QR kit stats */
+  qrKits?: QrKitsStats;
+  /** Optional: when backend provides referral stats */
+  referrals?: ReferralsStats;
+}
+
+export interface SupportStats {
+  totalSupportTickets: number;
+  resolvedSupportTickets: number;
+  openSupportTickets: number;
+}
+
+export interface QrKitsStats {
+  qrKitsGenerated: number;
+  staticQrScans: number;
+  dynamicQrScans: number;
+}
+
+export interface ReferralsStats {
+  totalReferrals: number;
+  successfulReferrals?: number;
+  pendingReferrals?: number;
 }
 
 export interface UserStats {
@@ -27,7 +51,8 @@ export interface UserStats {
   activeUsers: number;
   guestUsers: number;
   registeredUsers: number;
-  newUsersLast30Days: number;
+  newUsersLast30Days?: number;
+  newUsersLastPeriod?: number;
 }
 
 export interface BusinessStats {

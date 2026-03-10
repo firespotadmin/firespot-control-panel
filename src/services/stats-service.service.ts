@@ -1,34 +1,41 @@
 import axiosInstance from "@/security/api-secured";
+import type { BackofficeApiResponse } from "@/types/api";
 import type { BusinessChargesQuery } from "@/types/charge";
 import type { CustomersQuery } from "@/types/customer";
 import type { BusinessFeedbackQuery } from "@/types/feedback";
 import type { BusinessProductsQuery } from "@/types/product";
 import type { BusinessQrKitsQuery } from "@/types/qr-kit";
+import type { DashboardStats } from "@/types/business";
+import type { PlatformStats } from "@/types/stats";
 import type { AdminAllTransactionsQuery, BusinessTransactionsQuery } from "@/types/transaction";
 
+/** Returns unwrapped stats data when code === "00". */
 export const getStats = async ({
   fromDate,
   toDate,
 }: {
   fromDate: string;
   toDate: string;
-}) => {
-  try {
-    const response = await axiosInstance.get(
-      `/api/v1/admin/get-stats?fromDate=${fromDate}&toDate=${toDate}`
-    );
-    return response.data;
-  } catch (error: any) {
-    return error?.response;
+}): Promise<PlatformStats | null> => {
+  const response = await axiosInstance.get<
+    BackofficeApiResponse<PlatformStats>
+  >(`/api/v1/admin/get-stats?fromDate=${fromDate}&toDate=${toDate}`);
+  const body = response.data;
+  if (body?.code === "00" && body?.data) {
+    return body.data;
   }
+  return null;
 };
-export const getStatsBusiness = async () => {
-  try {
-    const response = await axiosInstance.get(`/api/v1/admin/business/stats`);
-    return response.data;
-  } catch (error: any) {
-    return error?.response;
+/** Returns unwrapped business stats when code === "00". */
+export const getStatsBusiness = async (): Promise<DashboardStats | null> => {
+  const response = await axiosInstance.get<
+    BackofficeApiResponse<DashboardStats>
+  >("/api/v1/admin/business/stats");
+  const body = response.data;
+  if (body?.code === "00" && body?.data) {
+    return body.data;
   }
+  return null;
 };
 export const getStatsBusinessById = async ({ id }: { id: string }) => {
   try {

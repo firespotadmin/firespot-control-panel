@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowDown2 } from "iconsax-reactjs";
-import { File, Download } from "lucide-react";
+import { File, Download, Loader } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -13,7 +13,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { DatePicker } from "@/components/ui/calender28";
 import { setDateRange } from "@/stores/store/date-range-slice";
-import { useDispatch } from "react-redux";
+import type { RootState } from "@/stores/store/store";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
   DialogContent,
@@ -21,16 +22,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { downloadOverviewReport } from "@/services/report-service.service";
+import toast from "react-hot-toast";
+
+function toDateOnly(d: Date): string {
+  return d.toISOString().split("T")[0];
+}
 
 const TopContentOne = () => {
   const dispatch = useDispatch();
+  const { fromDate, toDate } = useSelector((state: RootState) => state.dateRange);
 
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | undefined>();
   const [selectedDateTo, setSelectedDateTo] = useState<Date | undefined>();
   const [selectedPeriod, setSelectedPeriod] = useState<string>("this-week");
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [reportDateFrom, setReportDateFrom] = useState<Date | undefined>();
   const [reportDateTo, setReportDateTo] = useState<Date | undefined>();
   const [reportFormat, setReportFormat] = useState<string>("pdf");
+  const [downloading, setDownloading] = useState(false);
+
+  // Initialize Redux with "this week" on first load so Overview stats fetch with a range
+  useEffect(() => {
+    if (fromDate === "" && toDate === "") {
+      const today = new Date();
+      const first = new Date(today);
+      first.setDate(today.getDate() - today.getDay());
+      const last = new Date(first);
+      last.setDate(first.getDate() + 6);
+      dispatch(
+        setDateRange({
+          fromDate: toDateOnly(first),
+          toDate: toDateOnly(last),
+        })
+      );
+    }
+  }, [fromDate, toDate, dispatch]);
 
   const handleRadioChange = (value: string) => {
     setSelectedPeriod(value);
@@ -42,48 +69,44 @@ const TopContentOne = () => {
       setSelectedDateTo(today);
       dispatch(
         setDateRange({
-          fromDate: today.toISOString(),
-          toDate: today.toISOString(),
+          fromDate: toDateOnly(today),
+          toDate: toDateOnly(today),
         })
       );
     } else if (value === "this-week") {
       const first = new Date(today);
-      first.setDate(today.getDate() - today.getDay()); // Sunday
+      first.setDate(today.getDate() - today.getDay());
       const last = new Date(first);
-      last.setDate(first.getDate() + 6); // Saturday
-
+      last.setDate(first.getDate() + 6);
       setSelectedDateFrom(first);
       setSelectedDateTo(last);
       dispatch(
         setDateRange({
-          fromDate: first.toISOString(),
-          toDate: last.toISOString(),
+          fromDate: toDateOnly(first),
+          toDate: toDateOnly(last),
         })
       );
     } else if (value === "this-month") {
       const first = new Date(today.getFullYear(), today.getMonth(), 1);
       const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
       setSelectedDateFrom(first);
       setSelectedDateTo(last);
       dispatch(
         setDateRange({
-          fromDate: first.toISOString(),
-          toDate: last.toISOString(),
+          fromDate: toDateOnly(first),
+          toDate: toDateOnly(last),
         })
       );
     } else if (value === "this-quarter") {
-      const currentMonth = today.getMonth();
-      const quarterStartMonth = Math.floor(currentMonth / 3) * 3;
+      const quarterStartMonth = Math.floor(today.getMonth() / 3) * 3;
       const first = new Date(today.getFullYear(), quarterStartMonth, 1);
       const last = new Date(today.getFullYear(), quarterStartMonth + 3, 0);
-
       setSelectedDateFrom(first);
       setSelectedDateTo(last);
       dispatch(
         setDateRange({
-          fromDate: first.toISOString(),
-          toDate: last.toISOString(),
+          fromDate: toDateOnly(first),
+          toDate: toDateOnly(last),
         })
       );
     } else if (value === "custom") {
@@ -92,13 +115,12 @@ const TopContentOne = () => {
     }
   };
 
-  // 🔥 Dispatch when both custom dates are selected
   useEffect(() => {
     if (selectedPeriod === "custom" && selectedDateFrom && selectedDateTo) {
       dispatch(
         setDateRange({
-          fromDate: selectedDateFrom.toISOString(),
-          toDate: selectedDateTo.toISOString(),
+          fromDate: toDateOnly(selectedDateFrom),
+          toDate: toDateOnly(selectedDateTo),
         })
       );
     }
@@ -109,12 +131,22 @@ const TopContentOne = () => {
     handleRadioChange("this-week");
   };
 
-  const handleDownloadReport = () => {
-    if (reportDateFrom && reportDateTo) {
-      console.log(
-        `Downloading ${reportFormat.toUpperCase()} report from ${reportDateFrom.toLocaleDateString()} to ${reportDateTo.toLocaleDateString()}`
-      );
-      // TODO: Add your API call here to download the report
+  const handleDownloadReport = async () => {
+    if (!reportDateFrom || !reportDateTo) return;
+    const fromStr = toDateOnly(reportDateFrom);
+    const toStr = toDateOnly(reportDateTo);
+    setDownloading(true);
+    try {
+      await downloadOverviewReport(fromStr, toStr, reportFormat as "pdf" | "csv");
+      toast.success("Report downloaded.");
+      setReportDialogOpen(false);
+      setReportDateFrom(undefined);
+      setReportDateTo(undefined);
+      setReportFormat("pdf");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Download failed.");
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -206,7 +238,7 @@ const TopContentOne = () => {
         </div>
 
         {/* Right side button */}
-        <Dialog>
+        <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
           <DialogTrigger asChild>
             <Button className="py-[12px] bg-[#E5E7EB] font-medium hover:bg-[#E5E7EB] text-[#000] gap-2 text-[12px] h-[40px] cursor-pointer rounded-full">
               <File /> DOWNLOAD REPORT
@@ -295,6 +327,7 @@ const TopContentOne = () => {
                 type="button"
                 variant="ghost"
                 onClick={() => {
+                  setReportDialogOpen(false);
                   setReportDateFrom(undefined);
                   setReportDateTo(undefined);
                   setReportFormat("pdf");
@@ -305,10 +338,14 @@ const TopContentOne = () => {
               <Button
                 type="button"
                 onClick={handleDownloadReport}
-                disabled={!reportDateFrom || !reportDateTo}
+                disabled={!reportDateFrom || !reportDateTo || downloading}
                 className="bg-[#000] hover:bg-[#000] rounded-full text-white"
               >
-                <Download className="w-4 h-4 mr-1" />
+                {downloading ? (
+                  <Loader className="w-4 h-4 mr-1 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-1" />
+                )}
                 Download
               </Button>
             </div>

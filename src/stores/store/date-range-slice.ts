@@ -6,9 +6,22 @@ export interface DateRangeState {
   toDate: string;
 }
 
+function getThisWeekRange(): { from: string; to: string } {
+  const today = new Date();
+  const first = new Date(today);
+  first.setDate(today.getDate() - today.getDay());
+  const last = new Date(first);
+  last.setDate(first.getDate() + 6);
+  return {
+    from: first.toISOString().split("T")[0],
+    to: last.toISOString().split("T")[0],
+  };
+}
+
+const defaultRange = getThisWeekRange();
 const initialState: DateRangeState = {
-  fromDate: "",
-  toDate: "",
+  fromDate: defaultRange.from,
+  toDate: defaultRange.to,
 };
 
 export const dateRangeSlice = createSlice({

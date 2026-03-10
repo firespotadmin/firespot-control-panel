@@ -17,19 +17,19 @@ import { useGetStats } from "@/hooks/stats-hook.hook";
 import Header from "@/layouts/dashboard/header";
 import SideBar from "@/layouts/dashboard/sideBar";
 import type { RootState } from "@/stores/store/store";
-import type { PlatformStats, StatsResponse } from "@/types/stats";
+import type { PlatformStats } from "@/types/stats";
 
 const Insights = () => {
-  const [data, setData] = useState<StatsResponse | null>(null);
+  const [stats, setStats] = useState<PlatformStats | null>(null);
   const [loading, setLoading] = useState(true);
   const { fromDate, toDate } = useSelector((state: RootState) => state.dateRange);
 
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const response = (await useGetStats({ fromDate, toDate })) as StatsResponse;
-      if (response?.success) {
-        setData(response);
+      const data = await useGetStats({ fromDate, toDate });
+      if (data) {
+        setStats(data);
       }
     } finally {
       setLoading(false);
@@ -39,8 +39,6 @@ const Insights = () => {
   useEffect(() => {
     fetchStats();
   }, [fromDate, toDate]);
-
-  const stats: PlatformStats | null = data?.data?.data ?? null;
 
   const transactionBars = useMemo(
     () => [

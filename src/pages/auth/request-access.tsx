@@ -16,8 +16,9 @@ import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { Formik, Form, Field } from "formik";
 import { requestAccessSchema } from "@/schema/auth-schema";
+import { API_CODE_SUCCESS } from "@/types/api";
 import { useRequestAccess } from "@/hooks/auth-hook.hook";
-import type { AdminResponse, CreateUserDto, Role } from "@/types/auth";
+import type { CreateUserDto, Role } from "@/types/auth";
 import toast, { Toaster } from "react-hot-toast";
 
 const RequestAccess = () => {
@@ -28,10 +29,9 @@ const RequestAccess = () => {
 
   const handleRequestAccess = async ({ data }: { data: CreateUserDto }) => {
     try {
-      const response = await useRequestAccess({ data }) as AdminResponse;
-
-
-      if (response?.success) {
+      const response = await useRequestAccess({ data });
+      // Response shape: { code, message, data }
+      if (response?.code === API_CODE_SUCCESS) {
         toast.success("Request sent successfully!", {
           icon: "✅",
           style: {
@@ -41,32 +41,21 @@ const RequestAccess = () => {
             fontSize: "12px",
           },
         });
-
-        setTimeout(() => {
-          navigate("/MFA");
-        }, 1500);
-      }
-      else {
-        toast.error(
-          response?.data?.message ||
-          "Something went wrong. Please try again.",
-          {
-            icon: "⚠️",
-            style: {
-              borderRadius: "100px",
-              background: "#333",
-              color: "#fff",
-              fontSize: "12px",
-            },
-          }
-        );
+        setTimeout(() => navigate("/MFA"), 1500);
+      } else {
+        toast.error(response?.message || "Something went wrong. Please try again.", {
+          icon: "⚠️",
+          style: {
+            borderRadius: "100px",
+            background: "#333",
+            color: "#fff",
+            fontSize: "12px",
+          },
+        });
       }
     } catch (error: any) {
-      console.error("RequestAccess Error:", error);
-
       toast.error(
-        error?.response?.data?.message ||
-        "Something went wrong. Please try again.",
+        error?.response?.data?.message || "Something went wrong. Please try again.",
         {
           icon: "⚠️",
           style: {

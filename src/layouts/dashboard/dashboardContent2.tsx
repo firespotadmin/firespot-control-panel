@@ -2,15 +2,16 @@ import ColorBox from "@/components/common/dashboard/color-box";
 import type { TransactionStats } from "@/types/stats";
 
 interface DashboardContent2Props {
-  data: TransactionStats;
+  data?: TransactionStats | null;
 }
 
-// Utility function to format large numbers (K, M, B)
+// K = thousands, M = millions, B = billions, T = trillions
 const formatNumber = (num?: number): string => {
-  if (!num || isNaN(num)) return "0";
-  if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}b`;
-  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}m`;
-  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}k`;
+  if (num == null || isNaN(num)) return "0";
+  if (num >= 1e12) return `${(num / 1e12).toFixed(1)}T`;
+  if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`;
+  if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
+  if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
   return num.toString();
 };
 
@@ -23,10 +24,9 @@ const DashboardContent2 = ({ data }: DashboardContent2Props) => {
 
   return (
     <div>
-      <div>
-        <h1 className="font-bold text-[24px] py-5">Transactions</h1>
-
-        <div className="grid grid-cols-3 gap-5 pb-8">
+      <p className="text-[16px] font-[600] text-[#111827]">Transactions</p>
+      <p className="text-[13px] text-[#6B7280] mt-1">Gross volume, revenue, and transaction counts.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           <ColorBox
             fontSize="48px"
             count={`₦ ${formatNumber(data?.grossMerchandiseVolume)}`}
@@ -82,9 +82,6 @@ const DashboardContent2 = ({ data }: DashboardContent2Props) => {
             color="#F9A000"
           />
         </div>
-
-        <hr />
-      </div>
     </div>
   );
 };

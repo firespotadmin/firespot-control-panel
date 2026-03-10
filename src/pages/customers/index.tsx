@@ -16,10 +16,14 @@ const Customers = () => {
         <SideBar />
 
         {/* Main Section (scrollable) */}
-        <div className="flex-1 gap-[24px] p-6 overflow-y-auto flex-col bg-[#F4F6F8]">
+        <div className="flex-1 p-6 overflow-y-auto bg-[#F4F6F8] space-y-5">
           <TopHeader />
-          <BusinessCount />
-          <TabsSection />
+          <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+            <BusinessCount />
+          </div>
+          <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+            <TabsSection />
+          </div>
         </div>
       </div>
     </div>

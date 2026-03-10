@@ -1,7 +1,7 @@
-// ProtectedRoute.jsx
-import { Navigate, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { SupportUnreadProvider } from "@/contexts/support-unread-context";
 import Loading from "@/layouts/loading";
+import { useEffect, useState } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = () => {
     const [loading, setLoading] = useState(true);
@@ -31,7 +31,11 @@ const ProtectedRoute = () => {
         return <Navigate to="/" replace />;
     }
 
-    return <Outlet />;
+    return (
+      <SupportUnreadProvider>
+        <Outlet />
+      </SupportUnreadProvider>
+    );
 };
 
 export default ProtectedRoute;

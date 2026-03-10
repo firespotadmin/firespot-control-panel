@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { InfoCircle, TickCircle } from "iconsax-reactjs";
 import { Loader } from "lucide-react";
 
+import { API_CODE_SUCCESS } from "@/types/api";
 import { usePasswordReset } from "@/hooks/auth-hook.hook";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -48,17 +49,9 @@ const ForgotPassword = () => {
             setErrorObject({});
             setLoading(true);
 
-            // ✅ API call using hook mutation or function
             const response = await usePasswordReset({ uid, password: values.password });
-            ({
-                uid,
-                password: values.password,
-            });
-
-            console.log("Password reset successful:", response);
-            // Redirect or display success message
-            // e.g. navigate("/login?reset=success")
-            if (response?.success) {
+            // Response shape: { code, message, data }
+            if (response?.code === API_CODE_SUCCESS) {
                 toast.success("Password Reset Successfully!", {
                     icon: "✅",
                     duration: 5000,
@@ -69,9 +62,11 @@ const ForgotPassword = () => {
                         fontSize: "12px",
                     },
                 });
-                setTimeout(() => {
-                    navigate("/");
-                }, 1500);
+                setTimeout(() => navigate("/"), 1500);
+            } else {
+                setErrorObject({
+                    general: response?.message || "Something went wrong. Please try again.",
+                });
             }
         } catch (error: any) {
             console.error(error);

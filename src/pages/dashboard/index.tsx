@@ -1,3 +1,4 @@
+import TopContentOne from "@/components/common/dashboard/topContentOne";
 import { useGetStats } from "@/hooks/stats-hook.hook";
 import DashboadContent from "@/layouts/dashboard/dashboadContent";
 import DashboardContent2 from "@/layouts/dashboard/dashboardContent2";
@@ -10,9 +11,10 @@ import DashboardContent8 from "@/layouts/dashboard/dashboardContent8";
 import Header from "@/layouts/dashboard/header";
 import SideBar from "@/layouts/dashboard/sideBar";
 import type { RootState } from "@/stores/store/store";
-import type { StatsResponse } from "@/types/stats";
+import type { PlatformStats } from "@/types/stats";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Toaster } from "react-hot-toast";
 
 // ✅ Reusable skeleton component
 const SkeletonBox = ({ height = "h-[150px]" }: { height?: string }) => (
@@ -20,16 +22,16 @@ const SkeletonBox = ({ height = "h-[150px]" }: { height?: string }) => (
 );
 
 const Dashboard = () => {
-  const [data, setData] = useState<StatsResponse>(null!);
+  const [data, setData] = useState<PlatformStats | null>(null);
   const [loading, setLoading] = useState(true);
   const { fromDate, toDate } = useSelector((state: RootState) => state.dateRange);
 
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const response = (await useGetStats({ fromDate, toDate })) as StatsResponse;
-      if (response?.success) {
-        setData(response);
+      const stats = await useGetStats({ fromDate, toDate });
+      if (stats) {
+        setData(stats);
       }
     } finally {
       setLoading(false);
@@ -42,6 +44,7 @@ const Dashboard = () => {
 
   return (
     <div className="bg-[#F4F6F8] w-screen h-screen flex flex-col">
+      <Toaster position="top-center" />
       {/* Fixed Header */}
       <Header />
 
@@ -51,7 +54,8 @@ const Dashboard = () => {
         <SideBar />
 
         {/* Main Section (scrollable) */}
-        <div className="flex-1 p-6 overflow-y-auto bg-[#F4F6F8]">
+        <div className="flex-1 p-6 overflow-y-auto bg-[#F4F6F8] space-y-5">
+          <TopContentOne />
           {loading ? (
             <div className="space-y-5">
               <SkeletonBox height="h-[120px]" />
@@ -65,14 +69,30 @@ const Dashboard = () => {
             </div>
           ) : (
             <>
-              <DashboadContent data={data?.data?.data?.users} />
-              <DashboardContent2 data={data?.data?.data?.transactions} />
-              <DashboardContent3 data={data?.data?.data?.businesses} />
-              <DashboardContent4 data={data?.data?.data?.customers} />
-              <DashboardContent5 />
-              <DashboardContent6 />
-              <DashboardContent7 data={data?.data?.data?.feedback} />
-              <DashboardContent8 />
+              <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+                <DashboadContent data={data?.users} />
+              </div>
+              <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+                <DashboardContent2 data={data?.transactions} />
+              </div>
+              <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+                <DashboardContent3 data={data?.businesses} />
+              </div>
+              <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+                <DashboardContent4 data={data?.customers} />
+              </div>
+              <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+                <DashboardContent5 data={data?.support} />
+              </div>
+              <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+                <DashboardContent6 data={data?.qrKits} />
+              </div>
+              <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+                <DashboardContent7 data={data?.feedback} />
+              </div>
+              <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+                <DashboardContent8 data={data?.referrals} />
+              </div>
             </>
           )}
         </div>

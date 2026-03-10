@@ -4,6 +4,12 @@ export interface LoginPayload {
   email: string;
   password: string;
 }
+
+/** Login API success payload: backend returns this inside response.data when code === "00" */
+export interface LoginResponseData {
+  user: AuthUser;
+  token: string;
+}
 // types.ts
 export type Role = "ADMIN" | "CUSTOMER_CARE";
 
@@ -75,4 +81,5 @@ export interface LinkCompoProps {
   text: string;
   link: string;
   active?: boolean;
+  badge?: number;
 }

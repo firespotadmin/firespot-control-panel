@@ -31,7 +31,9 @@ const BusinessCount = () => {
 
   return (
     <div>
-      <div className="grid grid-cols-5 gap-[12px] pt-5">
+      <p className="text-[16px] font-[600] text-[#111827]">Summary</p>
+      <p className="text-[13px] text-[#6B7280] mt-1">Customer sign ups, verified, and statements.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mt-4">
         <ColorBox color="#000" count={stats.totalSignUps.toString()} label="Total Sign Ups" />
         <ColorBox color="#000" count={stats.totalVerified.toString()} label="Verified" />
         <ColorBox color="#000" count={stats.totalUnverified.toString()} label="Unverified" />

@@ -1,45 +1,57 @@
-export type SupportTicketStatus =
-  | "OPEN"
-  | "IN_PROGRESS"
-  | "RESOLVED"
-  | "CLOSED";
+export type { BackofficeApiResponse } from "@/types/api";
 
-export interface SupportTicket {
-  id: string;
-  createdAt: string;
-  updatedAt?: string;
-  email: string;
-  name?: string;
-  subject: string;
+// Ticket status (from backend)
+export type TicketStatus = "OPEN" | "REPLIED" | "CLOSED";
+
+// Sync
+export interface SyncResponse {
   message: string;
-  status: SupportTicketStatus;
-  response?: string | null;
-  respondedAt?: string | null;
+  ticketsCreated: number;
 }
 
-export interface SupportTicketQuery {
+// List
+export interface TicketSummary {
+  id: string;
+  ticketNumber: string;
+  senderEmail: string;
+  subject: string;
+  status: TicketStatus;
+  createdAt: string; // ISO 8601
+  unread: boolean;
+}
+
+export interface TicketListResponse {
+  tickets: TicketSummary[];
+  total: number;
   page: number;
   size: number;
-  search?: string;
-  status?: string;
 }
 
-export interface SupportTicketListResponse {
-  message?: string;
-  status?: string;
-  success?: boolean;
-  data?: {
-    content?: SupportTicket[];
-    totalPages?: number;
-    currentPage?: number;
-    totalElements?: number;
-  };
+// Detail
+export interface MessageItem {
+  from: string;
+  message: string;
+  date: string; // ISO 8601
 }
 
-export interface SupportTicketStatusUpdatePayload {
-  status: SupportTicketStatus;
+export interface TicketDetail {
+  id: string;
+  ticketNumber: string;
+  senderEmail: string;
+  subject: string;
+  status: TicketStatus;
+  messages: MessageItem[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface SupportTicketResponsePayload {
-  response: string;
+// Request bodies
+export interface ReplyRequest {
+  message: string;
+}
+
+export interface SendEmailRequest {
+  to: string;
+  subject: string;
+  message: string;
 }

@@ -21,11 +21,17 @@ const toReadableRole = (role?: string) => {
         .join(" ");
 };
 
+const getInitials = (user: ReturnType<typeof getStoredAuthUser>) => {
+    const first = user?.firstName?.trim().charAt(0) ?? "";
+    const last = user?.lastName?.trim().charAt(0) ?? "";
+    return (first + last).toUpperCase() || "?";
+};
+
 const ProfileDropDown = () => {
     const user = getStoredAuthUser();
     const navigate = useNavigate();
     const fullName = `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "User";
-    const profileImage = user?.profileImageUrl || "fac.jpg";
+    const profileImageUrl = user?.profileImageUrl;
 
     const handleLogout = () => {
         clearAuthSession();
@@ -36,11 +42,17 @@ const ProfileDropDown = () => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 cursor-pointer">
-                    <img className="w-[36px] h-[36px] object-cover rounded-full object-center" src={profileImage} alt={fullName} />
+                    {profileImageUrl ? (
+                        <img className="w-[36px] h-[36px] object-cover rounded-full object-center" src={profileImageUrl} alt={fullName} />
+                    ) : (
+                        <div className="w-[36px] h-[36px] rounded-full bg-[#E5E7EB] flex items-center justify-center text-[13px] font-[600] text-[#6B7280]">
+                            {getInitials(user)}
+                        </div>
+                    )}
                     <div className="flex gap-5 items-center">
                         <div>
                             <p className="font-[700] text-[14px]">{fullName}</p>
-                            <p className="text-[12px] font-[500] text-[#6B7280]">{toReadableRole(user?.role)}</p>
+                            <p className="text-[12px] text-right font-[500] text-[#6B7280]">{toReadableRole(user?.role)}</p>
                         </div>
                         <ArrowDown2 size={15} />
                     </div>

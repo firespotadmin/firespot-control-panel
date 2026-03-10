@@ -72,6 +72,17 @@ const formatAmount = (value: number | string | null | undefined) => {
   })}`;
 };
 
+// K = thousands, M = millions, B = billions, T = trillions (for Gross Merchandise Volume etc.)
+const formatLargeAmount = (value: number | string | null | undefined): string => {
+  const num = Number(value || 0);
+  if (Number.isNaN(num)) return "₦ 0";
+  if (num >= 1e12) return `₦ ${(num / 1e12).toFixed(1)}T`;
+  if (num >= 1e9) return `₦ ${(num / 1e9).toFixed(1)}B`;
+  if (num >= 1e6) return `₦ ${(num / 1e6).toFixed(1)}M`;
+  if (num >= 1e3) return `₦ ${(num / 1e3).toFixed(1)}K`;
+  return `₦ ${num.toLocaleString()}`;
+};
+
 const formatDate = (value: string | null | undefined) => {
   if (!value) {
     return "N/A";
@@ -204,11 +215,14 @@ const TransactionsSection = () => {
   const pageItems = getPageItems();
 
   return (
-    <div className="pt-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3 pb-5 border-b border-[#E5E7EB]">
-        <ColorBox
+    <div className="space-y-5">
+      <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+        <p className="text-[16px] font-[600] text-[#111827]">Summary</p>
+        <p className="text-[13px] text-[#6B7280] mt-1">Gross volume and transaction counts.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mt-4">
+          <ColorBox
           color="#111827"
-          count={formatAmount(transactionStats.gross)}
+          count={formatLargeAmount(transactionStats.gross)}
           label="Gross Merchandise Volume"
           fontSize="42px"
         />
@@ -232,9 +246,11 @@ const TransactionsSection = () => {
           count={String(transactionStats.totalFailed || 0)}
           label="Failed Transactions"
         />
+        </div>
       </div>
 
-      <div className="pt-4 flex items-center justify-between gap-3 flex-wrap">
+      <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
         <div className="flex gap-2 flex-wrap">
           <CustomerFilterChip label="ALL TIME" />
           <div className="bg-[#E5E7EB] cursor-pointer p-[10px] rounded-[20px]">
@@ -272,9 +288,9 @@ const TransactionsSection = () => {
             className="pl-9 h-9 rounded-full bg-[#F9FAFB] border-[#E5E7EB]"
           />
         </div>
-      </div>
+        </div>
 
-      {isLoading ? (
+        {isLoading ? (
         <div className="py-24 flex justify-center text-[#6B7280]">Loading transactions...</div>
       ) : error ? (
         <div className="py-24 flex justify-center text-[#E11D48]">{error}</div>
@@ -290,7 +306,7 @@ const TransactionsSection = () => {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-2xl border mt-5 border-[#E5E7EB] overflow-hidden">
+          <div className="bg-white rounded-[14px] border border-[#ECEEF1] overflow-hidden mt-4">
             <Table className="[&_th]:h-[52px] [&_th]:px-4 [&_td]:px-4 [&_td]:py-3">
               <TableHeader>
                 <TableRow>
@@ -374,6 +390,7 @@ const TransactionsSection = () => {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 };

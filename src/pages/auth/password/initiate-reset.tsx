@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, InfoCircle } from "iconsax-reactjs";
 import { Loader } from "lucide-react";
+import { API_CODE_SUCCESS } from "@/types/api";
 import { useInitiateReset } from "@/hooks/auth-hook.hook";
 import { useNavigate } from "react-router-dom";
 
@@ -27,16 +28,16 @@ const InitiateReset = () => {
             setErrorObject({});
             setLoading(true);
 
-            // Example API call — replace with your real forgot password hook or service
             const response = await useInitiateReset({ email: values.email });
-            setErrorObject({ email: response?.data?.message });
-            if (response.success) {
-                setTimeout(() => {
-                    navigate("/check-mail");
-                }, 1500);
+            // Response shape: { code, message, data }
+            if (response?.code === API_CODE_SUCCESS) {
+                setTimeout(() => navigate("/check-mail"), 1500);
+            } else {
+                setErrorObject({
+                    general: response?.message || "Something went wrong. Please try again.",
+                });
             }
         } catch (error: any) {
-            console.error(error);
             setErrorObject({
                 general: error?.response?.data?.message || "Something went wrong. Please try again.",
             });
