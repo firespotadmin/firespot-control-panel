@@ -12,6 +12,7 @@ import Businesses from "./pages/businesses";
 import Customers from "./pages/customers";
 import BusinessView from "./pages/businesses/business";
 import Transactions from "./pages/transactions";
+import QrKits from "./pages/qr-kits";
 import Products from "./pages/products";
 import Settings from "./pages/settings";
 import AuditLogs from "./pages/settings/audit-logs";
@@ -37,6 +38,14 @@ const App = () => {
         <Route path="/customers" element={<Customers />} />
         <Route path="/insights" element={<Insights />} />
         <Route path="/transactions" element={<Transactions />} />
+        <Route
+          path="/qr-kits"
+          element={
+            <RoleGuard path="/qr-kits" fallback="/dashboard">
+              <QrKits />
+            </RoleGuard>
+          }
+        />
         <Route
           path="/products"
           element={

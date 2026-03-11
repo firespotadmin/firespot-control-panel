@@ -61,6 +61,64 @@ export interface AuthUser {
   isActive?: boolean;
   profileImageUrl?: string;
 }
+
+export interface PhoneNumberPayload {
+  countryCode: string;
+  number: string;
+}
+
+export interface CustomerSignupPayload {
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  password: string;
+  phoneNumber: PhoneNumberPayload;
+  profilePictureUrl?: string;
+}
+
+export interface CustomerSignupResponseData {
+  message: string;
+  data: {
+    token: string | null;
+    userId: string;
+    transactionPinSetup: boolean;
+    isActivated: boolean;
+    isBlocked: boolean;
+    profilePicture?: string;
+    firstName: string;
+    lastName: string;
+    emailAddress: string;
+    phoneNumber: PhoneNumberPayload;
+  };
+}
+
+export interface BusinessSignupPayload {
+  businessName: string;
+  contactInformation: {
+    firstName: string;
+    lastName: string;
+    phoneNumber: PhoneNumberPayload;
+    customerSupport: {
+      emailAddress: string;
+      phoneNumber: PhoneNumberPayload;
+    };
+  };
+  emailAddress: string;
+  password: string;
+  businessImageUrl?: string;
+}
+
+export interface BusinessSignupResponseData {
+  message: string;
+  data: {
+    token: string;
+    businessData: {
+      id: string;
+      businessName: string;
+      businessImageUrl?: string;
+    };
+  };
+}
 // types.ts
 export interface VerifyOtpRequest {
   email: string;

@@ -1,14 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { Add } from "iconsax-reactjs";
+import TopHeaderActionButton from "@/components/common/dashboard/top-header-action-button";
 
 const TopHeader = () => {
   return (
     <div className="flex justify-between items-center">
       <h1 className="text-[28px] leading-[1.1] font-[700] text-[#0F172A]">Transactions</h1>
-      <Button className="flex bg-[#E5E7EB] text-[#000] text-[10px] hover:bg-[#D1D5DB] cursor-pointer p-[10px] gap-3 uppercase rounded-full">
-        <Add size={40} color="#000" />
-        Generate Statement
-      </Button>
+      <TopHeaderActionButton label="Generate Statement" />
     </div>
   );
 };

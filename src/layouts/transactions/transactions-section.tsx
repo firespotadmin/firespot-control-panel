@@ -6,11 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import FilterPillSelect from "@/components/common/filters/filter-pill-select";
+import FilterSearchInput from "@/components/common/filters/filter-search-input";
 import ColorBox from "@/components/common/dashboard/color-box";
 import { ArrowLeft2, ArrowRight2, CloseCircle, Copy, TickCircle } from "iconsax-reactjs";
-import { SearchNormal1 } from "iconsax-reactjs";
-import CustomerFilterChip from "@/components/common/customers/filter-chip";
 import { useGetAllTransactions, useGetTransactionStats } from "@/hooks/stats-hook.hook";
 import type { AdminTransaction, TransactionStatsData } from "@/types/transaction";
 import { useEffect, useState } from "react";
@@ -38,6 +37,9 @@ const TRANSACTION_STATUSES = [
   "PAYMENT_IN_PROGRESS",
   "PAYMENT_INITIATED",
 ];
+const PLACEHOLDER_FILTER_OPTIONS = [{ value: "", label: "All time" }];
+const INDUSTRY_FILTER_OPTIONS = [{ value: "", label: "All industries" }];
+const LOCATION_FILTER_OPTIONS = [{ value: "", label: "All locations" }];
 
 const getStatusIcon = (status: string) => {
   if (status === "SUCCESS" || status === "SETTLED") {
@@ -251,43 +253,50 @@ const TransactionsSection = () => {
 
       <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-        <div className="flex gap-2 flex-wrap">
-          <CustomerFilterChip label="ALL TIME" />
-          <div className="bg-[#E5E7EB] cursor-pointer p-[10px] rounded-[20px]">
-            <select
+          <div className="flex gap-2 flex-wrap">
+            <FilterPillSelect
+              value=""
+              onChange={() => undefined}
+              options={PLACEHOLDER_FILTER_OPTIONS}
+              className="min-w-[95px]"
+            />
+            <FilterPillSelect
               value={statusFilter}
-              onChange={(event) => {
-                setStatusFilter(event.target.value);
+              onChange={(value) => {
                 setPage(0);
+                setStatusFilter(value);
               }}
-              className="text-[10px] uppercase font-[700] bg-transparent outline-none"
-            >
-              {TRANSACTION_STATUSES.map((status) => (
-                <option key={status || "ANY_STATUS"} value={status}>
-                  {status || "ANY STATUS"}
-                </option>
-              ))}
-            </select>
+              options={TRANSACTION_STATUSES.map((status) => ({
+                value: status,
+                label: status || "Any status",
+              }))}
+              className="min-w-[115px]"
+            />
+            <FilterPillSelect
+              value=""
+              onChange={() => undefined}
+              options={INDUSTRY_FILTER_OPTIONS}
+              className="min-w-[135px]"
+            />
+            <FilterPillSelect
+              value=""
+              onChange={() => undefined}
+              options={LOCATION_FILTER_OPTIONS}
+              className="min-w-[135px]"
+            />
           </div>
-          <CustomerFilterChip label="ALL INDUSTRIES" />
-          <CustomerFilterChip label="ALL LOCATIONS" />
-        </div>
 
-        <div className="relative w-[320px]">
-          <SearchNormal1
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
-          />
-          <Input
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(0);
-            }}
-            placeholder="Search business names or fsID"
-            className="pl-9 h-9 rounded-full bg-[#F9FAFB] border-[#E5E7EB]"
-          />
-        </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <FilterSearchInput
+              value={search}
+              onChange={(value) => {
+                setPage(0);
+                setSearch(value);
+              }}
+              placeholder="Search business names or fsID"
+              className="w-[320px]"
+            />
+          </div>
         </div>
 
         {isLoading ? (

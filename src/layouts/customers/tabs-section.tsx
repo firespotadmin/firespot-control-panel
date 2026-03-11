@@ -1,4 +1,3 @@
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -7,8 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft2, ArrowRight2, Copy, SearchNormal1 } from "iconsax-reactjs";
-import CustomerFilterChip from "@/components/common/customers/filter-chip";
+import { Button } from "@/components/ui/button";
+import FilterPillDate from "@/components/common/filters/filter-pill-date";
+import FilterPillSelect from "@/components/common/filters/filter-pill-select";
+import FilterSearchInput from "@/components/common/filters/filter-search-input";
+import { ArrowLeft2, ArrowRight2, Copy } from "iconsax-reactjs";
 import NoCustomersState from "./no-customers-state";
 import { useGetCustomers } from "@/hooks/stats-hook.hook";
 import type { CustomerRecord } from "@/types/customer";
@@ -28,14 +30,24 @@ type CustomerTableRow = {
   storeId: string;
 };
 
+const PAGE_SIZE = 10;
+const CUSTOMER_STATUS_OPTIONS = [
+  { label: "Any status", value: "" },
+  { label: "Active", value: "ACTIVE" },
+  { label: "Inactive", value: "INACTIVE" },
+];
+
 const TabsSection = () => {
-  const PAGE_SIZE = 10;
   const [customers, setCustomers] = useState<CustomerTableRow[]>([]);
-  const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -44,6 +56,9 @@ const TabsSection = () => {
         setError(null);
 
         const response = await useGetCustomers({
+          from: fromDate || undefined,
+          to: toDate || undefined,
+          status: statusFilter || undefined,
           search,
           page,
           size: PAGE_SIZE,
@@ -133,11 +148,21 @@ const TabsSection = () => {
     };
 
     fetchCustomers();
-  }, [search, page]);
+  }, [fromDate, toDate, statusFilter, search, page]);
 
-  useEffect(() => {
+  const applyFilters = () => {
     setPage(0);
-  }, [search]);
+    setSearch(searchInput.trim());
+  };
+
+  const clearFilters = () => {
+    setFromDate("");
+    setToDate("");
+    setStatusFilter("");
+    setSearchInput("");
+    setSearch("");
+    setPage(0);
+  };
 
   const getPageItems = () => {
     const total = Math.max(totalPages, 1);
@@ -164,23 +189,43 @@ const TabsSection = () => {
     <div className="w-full pt-7">
       <div className="pt-4 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex gap-2 flex-wrap">
-          <CustomerFilterChip label="ALL TIME" />
-          <CustomerFilterChip label="ANY STATUS" />
-          <CustomerFilterChip label="ALL INDUSTRIES" />
-          <CustomerFilterChip label="ALL LOCATIONS" />
+          <FilterPillDate
+            value={fromDate}
+            onChange={(value) => setFromDate(value)}
+            placeholder="From date"
+          />
+          <FilterPillDate
+            value={toDate}
+            onChange={(value) => setToDate(value)}
+            placeholder="To date"
+          />
+          <FilterPillSelect
+            value={statusFilter}
+            onChange={(value) => setStatusFilter(value)}
+            options={CUSTOMER_STATUS_OPTIONS}
+          />
         </div>
 
-        <div className="relative w-[320px]">
-          <SearchNormal1
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+        <div className="flex items-center gap-2 flex-wrap">
+          <FilterSearchInput
+            value={searchInput}
+            onChange={setSearchInput}
+            onKeyDown={(event) => event.key === "Enter" && applyFilters()}
+            placeholder="Search customer name or email"
           />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search business names or FSiD"
-            className="pl-9 h-9 rounded-full bg-[#F9FAFB] border-[#E5E7EB]"
-          />
+          <Button
+            variant="outline"
+            className="h-9 rounded-full border-[#E5E7EB]"
+            onClick={clearFilters}
+          >
+            Clear
+          </Button>
+          <Button
+            className="h-9 rounded-full bg-[#111827] hover:bg-[#1F2937]"
+            onClick={applyFilters}
+          >
+            Apply
+          </Button>
         </div>
       </div>
 

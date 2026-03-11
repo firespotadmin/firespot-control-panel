@@ -1,6 +1,6 @@
-import FilterCompo from "@/components/common/business/filter-compo";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import FilterPillSearchInput from "@/components/common/filters/filter-search-input";
+import FilterPillSelect from "@/components/common/filters/filter-pill-select";
 import {
   Table,
   TableBody,
@@ -9,40 +9,131 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Add, Copy, SearchNormal1 } from "iconsax-reactjs";
+import { Add, ArrowLeft2, ArrowRight2, Copy } from "iconsax-reactjs";
 import { getBusiness } from "@/services/stats-service.service";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Business } from "@/types/business";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 
+function toDateOnly(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 const OverviewTab = () => {
   const ITEMS_PER_PAGE = 10;
   const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [allLoadedBusinesses, setAllLoadedBusinesses] = useState<Business[]>([]);
   const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [timeFilter, setTimeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [industryFilter, setIndustryFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     setPage(0);
-  }, [search]);
+  }, [search, timeFilter, statusFilter, industryFilter, locationFilter]);
+
+  const industryOptions = useMemo(() => {
+    const values = Array.from(
+      new Set(
+        allLoadedBusinesses
+          .map((business) => business.industry?.trim())
+          .filter((value): value is string => Boolean(value)),
+      ),
+    ).sort();
+
+    return [{ label: "All industries", value: "" }, ...values.map((value) => ({ label: value, value }))];
+  }, [allLoadedBusinesses]);
+
+  const locationOptions = useMemo(() => {
+    const values = Array.from(
+      new Set(
+        allLoadedBusinesses
+          .map((business) => {
+            const city = business.businessMainAddress?.city?.trim();
+            const state = business.businessMainAddress?.state?.trim();
+            return [city, state].filter(Boolean).join(", ");
+          })
+          .filter((value): value is string => Boolean(value)),
+      ),
+    ).sort();
+
+    return [{ label: "All locations", value: "" }, ...values.map((value) => ({ label: value, value }))];
+  }, [allLoadedBusinesses]);
+
+  const statusOptions = [
+    { label: "All status", value: "" },
+    { label: "Verified", value: "VERIFIED" },
+    { label: "Unverified", value: "UNVERIFIED" },
+  ];
+  const timeOptions = [
+    { label: "All time", value: "" },
+    { label: "Today", value: "TODAY" },
+    { label: "Last 7 days", value: "LAST_7_DAYS" },
+    { label: "Last 30 days", value: "LAST_30_DAYS" },
+    { label: "This month", value: "THIS_MONTH" },
+  ];
+
+  const range = useMemo(() => {
+    if (!timeFilter) {
+      return { from: undefined as string | undefined, to: undefined as string | undefined };
+    }
+
+    const today = new Date();
+    const end = toDateOnly(today);
+
+    if (timeFilter === "TODAY") {
+      return { from: end, to: end };
+    }
+
+    if (timeFilter === "LAST_7_DAYS") {
+      const start = new Date(today);
+      start.setDate(today.getDate() - 6);
+      return { from: toDateOnly(start), to: end };
+    }
+
+    if (timeFilter === "LAST_30_DAYS") {
+      const start = new Date(today);
+      start.setDate(today.getDate() - 29);
+      return { from: toDateOnly(start), to: end };
+    }
+
+    if (timeFilter === "THIS_MONTH") {
+      const start = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { from: toDateOnly(start), to: end };
+    }
+
+    return { from: undefined, to: undefined };
+  }, [timeFilter]);
 
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
         setLoading(true);
         setError(null);
+        const useClientFilterPagination = Boolean(industryFilter || locationFilter);
         const response = await getBusiness({
+          from: range.from,
+          to: range.to,
+          status: statusFilter || undefined,
           search,
-          page,
-          size: ITEMS_PER_PAGE,
+          page: useClientFilterPagination ? 0 : page,
+          size: useClientFilterPagination ? 500 : ITEMS_PER_PAGE,
         });
 
         if (response?.message === "No businesses") {
           setBusinesses([]);
+          setAllLoadedBusinesses([]);
           setTotalPages(1);
           setTotalItems(0);
           return;
@@ -62,23 +153,48 @@ const OverviewTab = () => {
         ) || []) as Business[];
 
         if (response?.success || Array.isArray(list)) {
-          setBusinesses(list);
-          setTotalPages(
-            nestedData?.numberOfPages ||
-              nestedData?.data?.totalPages ||
-              payload?.numberOfPages ||
-              payload?.totalPages ||
-              1,
-          );
-          setTotalItems(
-            nestedData?.numberOfItems ||
-              nestedData?.data?.totalElements ||
-              payload?.numberOfItems ||
-              payload?.totalElements ||
-              list.length,
-          );
+          setAllLoadedBusinesses(list);
+
+          const clientFiltered = list.filter((business) => {
+            const industryMatches =
+              !industryFilter || (business.industry || "").trim() === industryFilter;
+            const businessLocation = [
+              business.businessMainAddress?.city?.trim(),
+              business.businessMainAddress?.state?.trim(),
+            ]
+              .filter(Boolean)
+              .join(", ");
+            const locationMatches =
+              !locationFilter || businessLocation === locationFilter;
+            return industryMatches && locationMatches;
+          });
+
+          if (useClientFilterPagination) {
+            const start = page * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            setBusinesses(clientFiltered.slice(start, end));
+            setTotalItems(clientFiltered.length);
+            setTotalPages(Math.max(1, Math.ceil(clientFiltered.length / ITEMS_PER_PAGE)));
+          } else {
+            setBusinesses(clientFiltered);
+            setTotalPages(
+              nestedData?.numberOfPages ||
+                nestedData?.data?.totalPages ||
+                payload?.numberOfPages ||
+                payload?.totalPages ||
+                1,
+            );
+            setTotalItems(
+              nestedData?.numberOfItems ||
+                nestedData?.data?.totalElements ||
+                payload?.numberOfItems ||
+                payload?.totalElements ||
+                clientFiltered.length,
+            );
+          }
         } else {
           setBusinesses([]);
+          setAllLoadedBusinesses([]);
           setTotalPages(1);
           setTotalItems(0);
           if (response?.message) {
@@ -88,6 +204,7 @@ const OverviewTab = () => {
       } catch (err: any) {
         console.error("Error fetching businesses:", err);
         setBusinesses([]);
+        setAllLoadedBusinesses([]);
         setTotalPages(1);
         setTotalItems(0);
         const errorMessage =
@@ -101,33 +218,85 @@ const OverviewTab = () => {
     };
 
     fetchBusinesses();
-  }, [page, search]);
+  }, [page, search, range.from, range.to, statusFilter, industryFilter, locationFilter]);
 
   const startIndex = totalItems === 0 ? 0 : page * ITEMS_PER_PAGE + 1;
   const endIndex = Math.min((page + 1) * ITEMS_PER_PAGE, totalItems);
+  const pageItems = useMemo(() => {
+    const total = Math.max(totalPages, 1);
+    const current = page + 1;
+
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, index) => index + 1);
+    }
+
+    if (current <= 4) {
+      return [1, 2, 3, "...", total - 2, total - 1, total];
+    }
+
+    if (current >= total - 3) {
+      return [1, 2, 3, "...", total - 2, total - 1, total];
+    }
+
+    return [1, "...", current - 1, current, current + 1, "...", total];
+  }, [page, totalPages]);
+
+  const handleClearFilters = () => {
+    setTimeFilter("");
+    setStatusFilter("");
+    setIndustryFilter("");
+    setLocationFilter("");
+    setSearch("");
+    setSearchInput("");
+    setPage(0);
+  };
 
   return (
     <div className="">
-      <div className="flex pt-3 gap-2">
-        <FilterCompo data={"ALL TIME"} />
-        <FilterCompo data={"ALL STATUS"} />
-        <FilterCompo data={"ALL INDUSTRIES"} />
-        <FilterCompo data={"ALL LOCATIONS"} />
+      <div className="flex pt-3 gap-2 flex-wrap items-center">
+        <FilterPillSelect
+          value={timeFilter}
+          onChange={setTimeFilter}
+          options={timeOptions}
+          className="min-w-[110px]"
+        />
+        <FilterPillSelect
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={statusOptions}
+          className="min-w-[120px]"
+        />
+        <FilterPillSelect
+          value={industryFilter}
+          onChange={setIndustryFilter}
+          options={industryOptions}
+          className="min-w-[140px]"
+        />
+        <FilterPillSelect
+          value={locationFilter}
+          onChange={setLocationFilter}
+          options={locationOptions}
+          className="min-w-[140px]"
+        />
 
-        <div className="relative ml-auto w-[320px]">
-          <SearchNormal1
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
-          />
-          <Input
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(0);
+        <div className="ml-auto flex items-center gap-2 flex-wrap">
+          <FilterPillSearchInput
+            value={searchInput}
+            onChange={(value) => {
+              setSearchInput(value);
+              setSearch(value);
             }}
-            placeholder="Search business names or FSiD"
-            className="pl-9 h-9 rounded-full bg-[#F9FAFB] border-[#E5E7EB]"
+            placeholder="Search business names or fsID"
+            className="w-[320px]"
           />
+          <Button
+            type="button"
+            variant="outline"
+            className="h-9 rounded-full border-[#E5E7EB]"
+            onClick={handleClearFilters}
+          >
+            Clear
+          </Button>
         </div>
       </div>
 
@@ -158,37 +327,58 @@ const OverviewTab = () => {
         ) : (
           <>
             <DataTable data={businesses} />
-            <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 bg-white rounded-b-2xl">
-              <p className="text-[12px] text-[#6B7280]">
-                Showing {startIndex} - {endIndex} of {totalItems}
-              </p>
+            <div className="flex items-center justify-between border-t border-gray-200 px-4 py-4 bg-white rounded-b-2xl text-[14px] text-[#6B7280]">
+              <button
+                type="button"
+                className="flex items-center gap-2 disabled:opacity-40"
+                onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                disabled={page === 0}
+              >
+                <ArrowLeft2 size={16} />
+                Previous
+              </button>
+
               <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-8 px-3 text-[12px]"
-                  disabled={page === 0}
-                  onClick={() => setPage((prev) => Math.max(0, prev - 1))}
-                >
-                  Previous
-                </Button>
-                <p className="text-[12px] text-[#6B7280]">
-                  Page {page + 1} of {Math.max(totalPages, 1)}
-                </p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-8 px-3 text-[12px]"
-                  disabled={page >= totalPages - 1}
-                  onClick={() =>
-                    setPage((prev) =>
-                      Math.min(prev + 1, Math.max(totalPages - 1, 0)),
-                    )
+                {pageItems.map((item, index) => {
+                  if (item === "...") {
+                    return (
+                      <span key={`ellipsis-${index}`} className="px-2 text-[#9CA3AF]">
+                        ...
+                      </span>
+                    );
                   }
-                >
-                  Next
-                </Button>
+
+                  const pageNumber = item as number;
+                  const isActive = pageNumber === page + 1;
+
+                  return (
+                    <button
+                      key={pageNumber}
+                      type="button"
+                      onClick={() => setPage(pageNumber - 1)}
+                      className={`h-8 w-8 rounded-full text-[13px] transition-colors ${
+                        isActive
+                          ? "bg-[#E5E7EB] text-[#111827] font-[600]"
+                          : "text-[#6B7280] hover:bg-[#F3F4F6]"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
               </div>
+
+              <button
+                type="button"
+                className="flex items-center gap-2 disabled:opacity-40"
+                onClick={() =>
+                  setPage((prev) => Math.min(prev + 1, Math.max(totalPages - 1, 0)))
+                }
+                disabled={page >= totalPages - 1}
+              >
+                Next
+                <ArrowRight2 size={16} />
+              </button>
             </div>
           </>
         )}

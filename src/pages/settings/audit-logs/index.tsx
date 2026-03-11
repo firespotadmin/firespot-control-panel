@@ -1,7 +1,6 @@
 import Header from "@/layouts/dashboard/header";
 import SideBar from "@/layouts/dashboard/sideBar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -10,6 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import FilterPillDate from "@/components/common/filters/filter-pill-date";
+import FilterPillInput from "@/components/common/filters/filter-pill-input";
 import {
   Select,
   SelectContent,
@@ -272,51 +273,48 @@ export default function AuditLogsPage() {
             </p>
 
             <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Input
-                type="date"
+              <FilterPillDate
                 value={from}
-                onChange={(e) => {
-                  setFrom(e.target.value);
+                onChange={(value) => {
+                  setFrom(value);
                   setPage(0);
                 }}
-                className="h-[40px] w-[160px] rounded-[10px] border-[#E5E7EB]"
+                placeholder="From date"
               />
-              <Input
-                type="date"
+              <FilterPillDate
                 value={to}
-                onChange={(e) => {
-                  setTo(e.target.value);
+                onChange={(value) => {
+                  setTo(value);
                   setPage(0);
                 }}
-                className="h-[40px] w-[160px] rounded-[10px] border-[#E5E7EB]"
+                placeholder="To date"
               />
-              <Input
-                placeholder="User ID"
+              <FilterPillInput
                 value={userIdFilter}
-                onChange={(e) => {
-                  setUserIdFilter(e.target.value);
+                onChange={(value) => {
+                  setUserIdFilter(value);
                   setPage(0);
                 }}
-                className="h-[40px] w-[180px] rounded-[10px] border-[#E5E7EB]"
+                placeholder="User ID"
               />
-              <Input
-                placeholder="User email"
+              <FilterPillInput
                 value={userEmailFilter}
-                onChange={(e) => {
-                  setUserEmailFilter(e.target.value);
+                onChange={(value) => {
+                  setUserEmailFilter(value);
                   setPage(0);
                 }}
-                className="h-[40px] w-[200px] rounded-[10px] border-[#E5E7EB]"
+                placeholder="User email"
+                className="min-w-[220px]"
               />
               <Button
                 variant="outline"
-                className="h-[40px] rounded-[10px]"
+                className="h-9 rounded-full border-[#E5E7EB]"
                 onClick={clearFilters}
               >
-                Clear filters
+                Clear
               </Button>
               <Button
-                className="h-[40px] rounded-[10px] bg-[#111827] hover:bg-[#1F2937]"
+                className="h-9 rounded-full bg-[#111827] hover:bg-[#1F2937]"
                 onClick={fetchLogs}
                 disabled={loading}
               >

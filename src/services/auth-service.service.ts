@@ -1,7 +1,11 @@
 import axiosInstance, { axiosPublicInstance } from "@/security/api-secured";
 import type { BackofficeApiResponse } from "@/types/api";
 import type {
+  BusinessSignupPayload,
+  BusinessSignupResponseData,
   CreateUserDto,
+  CustomerSignupPayload,
+  CustomerSignupResponseData,
   LoginPayload,
   LoginResponseData,
   VerifyOtpRequest,
@@ -81,5 +85,29 @@ export const verifyOtp = async ({
   const response = await axiosInstance.post<
     BackofficeApiResponse<VerifyOtpResponseData>
   >("/api/v1/admin/verify-otp", data);
+  return response.data;
+};
+
+export const customerSignup = async ({
+  data,
+}: {
+  data: CustomerSignupPayload;
+}): Promise<CustomerSignupResponseData> => {
+  const response = await axiosPublicInstance.post<CustomerSignupResponseData>(
+    "/api/v1/customer",
+    data,
+  );
+  return response.data;
+};
+
+export const businessSignup = async ({
+  data,
+}: {
+  data: BusinessSignupPayload;
+}): Promise<BusinessSignupResponseData> => {
+  const response = await axiosPublicInstance.post<BusinessSignupResponseData>(
+    "/api/v1/business",
+    data,
+  );
   return response.data;
 };

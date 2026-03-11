@@ -5,20 +5,12 @@ import {
   ArrowLeft2,
   ArrowRight2,
   MessageText1,
-  SearchNormal1,
   SmsEdit,
   Refresh2,
 } from "iconsax-reactjs";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import FilterPillSelect from "@/components/common/filters/filter-pill-select";
+import FilterSearchInput from "@/components/common/filters/filter-search-input";
 import {
   closeTicket,
   replyToTicket,
@@ -248,50 +242,46 @@ const SupportSection = () => {
       <p className="text-[13px] text-[#6B7280] mt-1">Sync inbox, search, filter, and manage support tickets.</p>
       <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2 flex-1">
-          <div className="relative w-full lg:max-w-[340px]">
-            <SearchNormal1
-              size={18}
-              color="#9CA3AF"
-              className="absolute left-3 top-1/2 -translate-y-1/2"
-            />
-            <Input
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder="Search by sender email or subject"
-              className="pl-10 h-[44px] rounded-[10px] border-[#E5E7EB] bg-white"
-            />
-          </div>
+          <FilterPillSelect
+            value={statusFilter}
+            onChange={(value) => {
+              setPage(0);
+              setStatusFilter(value);
+            }}
+            options={STATUS_OPTIONS.map((opt) => ({
+              value: opt.value === "ALL" ? "" : opt.value,
+              label: opt.label,
+            }))}
+            className="min-w-[160px]"
+          />
+          <FilterSearchInput
+            value={searchInput}
+            onChange={setSearchInput}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            placeholder="Search by sender email or subject"
+            className="w-full lg:w-[340px]"
+          />
           <Button
             variant="outline"
-            className="h-[44px] rounded-[10px] border-[#E5E7EB]"
+            className="h-9 rounded-full border-[#E5E7EB]"
+            onClick={() => {
+              setPage(0);
+              setStatusFilter("");
+              setSearch("");
+              setSearchInput("");
+            }}
+          >
+            Clear
+          </Button>
+          <Button
+            className="h-9 rounded-full bg-[#111827] hover:bg-[#1F2937]"
             onClick={handleSearch}
           >
-            Search
+            Apply
           </Button>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="w-full sm:w-[180px]">
-            <Select
-              value={statusFilter || "ALL"}
-              onValueChange={(v) => {
-                setPage(0);
-                setStatusFilter(v === "ALL" ? "" : v);
-              }}
-            >
-              <SelectTrigger className="w-full h-[44px] rounded-[10px] bg-white border-[#E5E7EB]">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
           <Button
             variant="outline"
             className="h-[44px] rounded-[10px] border-[#E5E7EB]"

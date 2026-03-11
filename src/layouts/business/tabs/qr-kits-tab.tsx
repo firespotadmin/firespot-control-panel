@@ -4,6 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getBusinessPayLink, getBusinessQrImageUrl } from "@/lib/qr-kit";
 import { ArrowRight2 } from "iconsax-reactjs";
 import { useMemo, useState } from "react";
 
@@ -12,15 +13,13 @@ const QRKitsTab = ({ businessId }: { businessId?: string }) => {
 
   const qrLink = useMemo(() => {
     if (!businessId) return "";
-    return `https://pay.firespot.co/business?businessId=${businessId}`;
+    return getBusinessPayLink(businessId);
   }, [businessId]);
 
   const qrImageUrl = useMemo(() => {
     if (!qrLink) return "";
-    return `https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=${encodeURIComponent(
-      qrLink,
-    )}`;
-  }, [qrLink]);
+    return getBusinessQrImageUrl(businessId!);
+  }, [businessId, qrLink]);
 
   return (
     <div className="w-full py-6">
@@ -56,6 +55,7 @@ const QRKitsTab = ({ businessId }: { businessId?: string }) => {
                 src={qrImageUrl}
                 alt="Business QR Code"
                 className="w-[380px] h-[380px] object-contain"
+                loading="lazy"
               />
               <p className="text-[12px] text-[#6B7280] break-all text-center">
                 {qrLink}
