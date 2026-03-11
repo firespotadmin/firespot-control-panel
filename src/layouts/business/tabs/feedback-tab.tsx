@@ -1,12 +1,14 @@
 import FilterCompo from "@/components/common/business/filter-compo";
 import { Input } from "@/components/ui/input";
 import { useGetBusinessFeedbacks } from "@/hooks/stats-hook.hook";
+import { getDefaultApiDateRange } from "@/services/stats-service.service";
 import type { BusinessFeedbackItem } from "@/types/feedback";
 import { SearchNormal1 } from "iconsax-reactjs";
 import { Loader } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 const FeedbackTab = ({ businessId }: { businessId?: string }) => {
+  const defaultRange = getDefaultApiDateRange();
   const [feedbacksByMonth, setFeedbacksByMonth] = useState<
     Record<string, BusinessFeedbackItem[]>
   >({});
@@ -29,8 +31,8 @@ const FeedbackTab = ({ businessId }: { businessId?: string }) => {
 
         const response = await useGetBusinessFeedbacks({
           businessId,
-          from: "2024-01-01",
-          to: "2024-12-31",
+          from: defaultRange.from,
+          to: defaultRange.to,
           search: "",
           rating: "",
           page: 0,
@@ -67,7 +69,7 @@ const FeedbackTab = ({ businessId }: { businessId?: string }) => {
     };
 
     fetchFeedbacks();
-  }, [businessId]);
+  }, [businessId, defaultRange.from, defaultRange.to]);
 
   const monthList = useMemo(
     () => Object.keys(feedbacksByMonth),

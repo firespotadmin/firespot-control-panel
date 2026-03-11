@@ -9,6 +9,21 @@ import type { DashboardStats } from "@/types/business";
 import type { PlatformStats } from "@/types/stats";
 import type { AdminAllTransactionsQuery, BusinessTransactionsQuery } from "@/types/transaction";
 
+function toDateOnly(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
+export function getDefaultApiDateRange() {
+  const to = new Date();
+  const from = new Date(to);
+  from.setFullYear(from.getFullYear() - 1);
+
+  return {
+    from: toDateOnly(from),
+    to: toDateOnly(to),
+  };
+}
+
 /** Returns unwrapped stats data when code === "00". */
 export const getStats = async ({
   fromDate,
@@ -81,8 +96,8 @@ export const getBusiness = async ({
 
 export const getBusinessTransactions = async ({
   businessId,
-  from = "2024-01-01",
-  to = "2024-12-31",
+  from,
+  to,
   status = "",
   location = "",
   search = "",
@@ -90,9 +105,12 @@ export const getBusinessTransactions = async ({
   size = 10,
 }: BusinessTransactionsQuery) => {
   try {
+    const defaultRange = getDefaultApiDateRange();
+    const resolvedFrom = from || defaultRange.from;
+    const resolvedTo = to || defaultRange.to;
     const params = new URLSearchParams();
-    params.append("from", from);
-    params.append("to", to);
+    params.append("from", resolvedFrom);
+    params.append("to", resolvedTo);
     params.append("status", status);
     params.append("location", location);
     params.append("search", search);
@@ -111,17 +129,20 @@ export const getBusinessTransactions = async ({
 
 export const getBusinessFeedbacks = async ({
   businessId,
-  from = "2024-01-01",
-  to = "2024-12-31",
+  from,
+  to,
   search = "",
   rating = "",
   page = 0,
   size = 10,
 }: BusinessFeedbackQuery) => {
   try {
+    const defaultRange = getDefaultApiDateRange();
+    const resolvedFrom = from || defaultRange.from;
+    const resolvedTo = to || defaultRange.to;
     const params = new URLSearchParams();
-    params.append("from", from);
-    params.append("to", to);
+    params.append("from", resolvedFrom);
+    params.append("to", resolvedTo);
     params.append("search", search);
     params.append("rating", rating);
     params.append("page", page.toString());
@@ -194,17 +215,20 @@ export const getBusinessQrKits = async ({
 };
 
 export const getCustomers = async ({
-  from = "2024-01-01",
-  to = "2024-12-31",
+  from,
+  to,
   status = "",
   search = "",
   page = 0,
   size = 10,
 }: CustomersQuery) => {
   try {
+    const defaultRange = getDefaultApiDateRange();
+    const resolvedFrom = from || defaultRange.from;
+    const resolvedTo = to || defaultRange.to;
     const params = new URLSearchParams();
-    params.append("from", from);
-    params.append("to", to);
+    params.append("from", resolvedFrom);
+    params.append("to", resolvedTo);
     params.append("status", status);
     params.append("search", search);
     params.append("page", page.toString());

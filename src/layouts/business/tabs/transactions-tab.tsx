@@ -9,6 +9,7 @@ import {
 import FilterCompo from "@/components/common/business/filter-compo";
 import { Input } from "@/components/ui/input";
 import { useGetBusinessTransactions } from "@/hooks/stats-hook.hook";
+import { getDefaultApiDateRange } from "@/services/stats-service.service";
 import type {
   BusinessTransaction,
   BusinessTransactionStore,
@@ -39,7 +40,7 @@ type TransactionRow = {
 
 const TransactionsTab = ({ businessId }: { businessId?: string }) => {
   const PAGE_SIZE = 10;
-  const today = new Date().toISOString().split("T")[0];
+  const defaultRange = getDefaultApiDateRange();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -77,8 +78,8 @@ const TransactionsTab = ({ businessId }: { businessId?: string }) => {
 
         const response = await useGetBusinessTransactions({
           businessId,
-          from: "2024-01-01",
-          to: today,
+          from: defaultRange.from,
+          to: defaultRange.to,
           status: "",
           location: "",
           search,
@@ -136,7 +137,7 @@ const TransactionsTab = ({ businessId }: { businessId?: string }) => {
     };
 
     fetchTransactions();
-  }, [businessId, today, page, search]);
+  }, [businessId, defaultRange.from, defaultRange.to, page, search]);
 
   const formatCurrency = (value: number | null | undefined) => {
     const amount = Number(value ?? 0);
