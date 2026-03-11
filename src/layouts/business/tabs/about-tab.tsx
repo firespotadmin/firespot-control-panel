@@ -17,13 +17,14 @@ const formatAddress = (address: unknown) => {
   }
 
   const value = address as {
+    address?: string;
     street?: string;
     city?: string;
     state?: string;
     country?: string;
   };
 
-  return [value.street, value.city, value.state, value.country]
+  return [value.address, value.street, value.city, value.state, value.country]
     .filter(Boolean)
     .join(", ");
 };

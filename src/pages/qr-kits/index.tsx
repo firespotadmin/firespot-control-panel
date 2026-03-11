@@ -5,7 +5,7 @@ import FilterSearchInput from "@/components/common/filters/filter-search-input";
 import { getBusinessPayLink, getBusinessQrImageUrl } from "@/lib/qr-kit";
 import { getBusiness } from "@/services/stats-service.service";
 import type { Business } from "@/types/business";
-import { ArrowLeft, ArrowRight, Copy, ExternalLink, Loader } from "lucide-react";
+import { ArrowLeft, ArrowRight, Copy, ExternalLink } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 

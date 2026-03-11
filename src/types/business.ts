@@ -40,12 +40,26 @@ export interface Business extends GeneralEntity {
   fcmToken?: string;
 }
 
+export interface BusinessPhoneNumber {
+  countryCode?: string;
+  number?: string;
+}
+
+export interface CustomerSupportInfo {
+  emailAddress?: string;
+  phoneNumber?: BusinessPhoneNumber | string;
+}
+
 export interface ContactInformation {
-  phoneNumber?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: BusinessPhoneNumber | string;
   email?: string;
+  customerSupport?: CustomerSupportInfo;
 }
 
 export interface BusinessAddress {
+  address?: string;
   street?: string;
   city?: string;
   state?: string;
@@ -83,7 +97,39 @@ export type BusinessType =
   | "TECH"
   | "OTHER";
 
-  export interface DashboardStats {
+export interface UpdateBusinessProfilePayload {
+  businessName: string;
+  firespotId?: string;
+  businessDescription?: string;
+  registrationNumber?: string;
+  businessAddress?: {
+    state?: string;
+    city?: string;
+    address?: string;
+  };
+  websiteUrl?: string;
+  customerSupport?: {
+    emailAddress?: string;
+    phoneNumber?: {
+      countryCode?: string;
+      number?: string;
+    };
+  };
+  industry?: string;
+  numberOfBranches?: string;
+  socialMediaProfile?: {
+    twitterUrl?: string;
+    faceBookUrl?: string;
+    instagramUrl?: string;
+    tiktokUrl?: string;
+    whatsappUrl?: string;
+    customUrl?: string;
+  };
+  businessImageUrl?: string;
+  businessBannerImageUrl?: string;
+}
+
+export interface DashboardStats {
   totalSignUps: number;
   totalVerified: number;
   totalUnverified: number;

@@ -31,7 +31,6 @@ const OverviewTab = () => {
   const [searchInput, setSearchInput] = useState("");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [timeFilter, setTimeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [industryFilter, setIndustryFilter] = useState("");
@@ -135,7 +134,6 @@ const OverviewTab = () => {
           setBusinesses([]);
           setAllLoadedBusinesses([]);
           setTotalPages(1);
-          setTotalItems(0);
           return;
         }
 
@@ -173,7 +171,6 @@ const OverviewTab = () => {
             const start = page * ITEMS_PER_PAGE;
             const end = start + ITEMS_PER_PAGE;
             setBusinesses(clientFiltered.slice(start, end));
-            setTotalItems(clientFiltered.length);
             setTotalPages(Math.max(1, Math.ceil(clientFiltered.length / ITEMS_PER_PAGE)));
           } else {
             setBusinesses(clientFiltered);
@@ -184,19 +181,11 @@ const OverviewTab = () => {
                 payload?.totalPages ||
                 1,
             );
-            setTotalItems(
-              nestedData?.numberOfItems ||
-                nestedData?.data?.totalElements ||
-                payload?.numberOfItems ||
-                payload?.totalElements ||
-                clientFiltered.length,
-            );
           }
         } else {
           setBusinesses([]);
           setAllLoadedBusinesses([]);
           setTotalPages(1);
-          setTotalItems(0);
           if (response?.message) {
             setError(response.message);
           }
@@ -206,7 +195,6 @@ const OverviewTab = () => {
         setBusinesses([]);
         setAllLoadedBusinesses([]);
         setTotalPages(1);
-        setTotalItems(0);
         const errorMessage =
           err?.response?.data?.message ||
           err?.message ||
@@ -220,8 +208,6 @@ const OverviewTab = () => {
     fetchBusinesses();
   }, [page, search, range.from, range.to, statusFilter, industryFilter, locationFilter]);
 
-  const startIndex = totalItems === 0 ? 0 : page * ITEMS_PER_PAGE + 1;
-  const endIndex = Math.min((page + 1) * ITEMS_PER_PAGE, totalItems);
   const pageItems = useMemo(() => {
     const total = Math.max(totalPages, 1);
     const current = page + 1;

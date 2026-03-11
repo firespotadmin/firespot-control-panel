@@ -6,6 +6,7 @@ import { getStatsBusinessById } from "@/services/stats-service.service";
 import type { Business } from "@/types/business";
 import { ArrowRight2 } from "iconsax-reactjs";
 import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 const BusinessView = () => {
@@ -34,6 +35,7 @@ const BusinessView = () => {
 
   return (
     <div className="bg-[#F4F6F8] w-screen h-screen flex flex-col">
+      <Toaster position="top-center" />
       {/* Fixed Header */}
       <Header />
 
@@ -60,7 +62,11 @@ const BusinessView = () => {
           </div>
 
           {/* Content */}
-          <TopDetails data={business} isLoading={isLoading} />
+          <TopDetails
+            data={business}
+            isLoading={isLoading}
+            onBusinessUpdated={() => (id ? fetchBusinessById(id) : undefined)}
+          />
           <TabsSection businessId={business?.id} business={business} />
         </div>
       </div>
