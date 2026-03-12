@@ -1,3 +1,4 @@
+import { topHeaderActionButtonClassName } from "@/components/common/dashboard/top-header-action-button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +21,7 @@ const FilterPillInput = ({
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
       className={cn(
-        "h-[40px] min-w-[180px] rounded-[20px] border-0 bg-[#E5E7EB] px-4 text-[10px] font-[700] uppercase text-[#111827] placeholder:text-[#6B7280] shadow-none focus-visible:ring-0",
+        `${topHeaderActionButtonClassName} min-w-[180px] border-0 text-[11px] font-[700] uppercase tracking-[0.08em] placeholder:text-[#6B7280] focus-visible:ring-0`,
         className
       )}
     />

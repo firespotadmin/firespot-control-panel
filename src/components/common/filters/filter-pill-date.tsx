@@ -1,3 +1,4 @@
+import { topHeaderActionButtonClassName } from "@/components/common/dashboard/top-header-action-button";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -58,7 +59,7 @@ const FilterPillDate = ({
           variant="outline"
           aria-label={placeholder}
           className={cn(
-            "h-[40px] min-w-[150px] justify-between rounded-[20px] border-0 bg-[#E5E7EB] px-4 text-[10px] font-[700] uppercase text-[#111827] shadow-none hover:bg-[#D1D5DB] focus-visible:ring-0",
+            `${topHeaderActionButtonClassName} min-w-[150px] justify-between border-0 text-[11px] font-[700] uppercase tracking-[0.08em] focus-visible:ring-0`,
             className
           )}
         >

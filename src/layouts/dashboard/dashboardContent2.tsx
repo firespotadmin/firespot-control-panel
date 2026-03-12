@@ -28,7 +28,7 @@ const DashboardContent2 = ({ data }: DashboardContent2Props) => {
       <p className="text-[13px] text-[#6B7280] mt-1">Gross volume, revenue, and transaction counts.</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           <ColorBox
-            fontSize="48px"
+            // fontSize="48px"
             count={`₦ ${formatNumber(data?.grossMerchandiseVolume)}`}
             label="Gross Merchandise Volume"
             color="#000"

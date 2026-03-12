@@ -20,7 +20,7 @@ const ColorBox = ({
     <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-4 w-full">
       <div className="flex items-center justify-between">
         <p className="text-[13px] text-[#6B7280]">{label}</p>
-        {text ? <p className="text-[12px] font-[600] text-[#111827]">{text}</p> : null}
+        {text ? <p className="text-[13px] font-[600] text-[#111827]">{text}</p> : null}
       </div>
       <p
         className="text-[28px] font-[700] text-[#111827] mt-1"

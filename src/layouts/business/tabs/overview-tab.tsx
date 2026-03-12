@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { topHeaderActionButtonClassName } from "@/components/common/dashboard/top-header-action-button";
 import FilterPillSearchInput from "@/components/common/filters/filter-search-input";
 import FilterPillSelect from "@/components/common/filters/filter-pill-select";
 import {
@@ -278,7 +279,7 @@ const OverviewTab = () => {
           <Button
             type="button"
             variant="outline"
-            className="h-9 rounded-full border-[#E5E7EB]"
+            className={`${topHeaderActionButtonClassName} border-0 text-[11px] font-[700] uppercase tracking-[0.08em]`}
             onClick={handleClearFilters}
           >
             Clear

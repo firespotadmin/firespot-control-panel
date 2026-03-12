@@ -27,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { topHeaderActionButtonClassName } from "@/components/common/dashboard/top-header-action-button";
 import FilterPillSelect from "@/components/common/filters/filter-pill-select";
 import FilterSearchInput from "@/components/common/filters/filter-search-input";
 import {
@@ -263,7 +264,7 @@ const SupportSection = () => {
           />
           <Button
             variant="outline"
-            className="h-9 rounded-full border-[#E5E7EB]"
+            className={`${topHeaderActionButtonClassName} border-0 text-[11px] font-[700] uppercase tracking-[0.08em]`}
             onClick={() => {
               setPage(0);
               setStatusFilter("");
@@ -274,7 +275,7 @@ const SupportSection = () => {
             Clear
           </Button>
           <Button
-            className="h-9 rounded-full bg-[#111827] hover:bg-[#1F2937]"
+            className={`${topHeaderActionButtonClassName} text-[11px] font-[700] uppercase tracking-[0.08em]`}
             onClick={handleSearch}
           >
             Apply

@@ -226,7 +226,7 @@ const TransactionsSection = () => {
           color="#111827"
           count={formatLargeAmount(transactionStats.gross)}
           label="Gross Merchandise Volume"
-          fontSize="42px"
+          // fontSize="42px"
         />
         <ColorBox
           color="#111827"

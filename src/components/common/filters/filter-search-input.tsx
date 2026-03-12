@@ -1,4 +1,6 @@
+import { topHeaderActionButtonClassName } from "@/components/common/dashboard/top-header-action-button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { SearchNormal1 } from "iconsax-reactjs";
 import type { KeyboardEventHandler } from "react";
 
@@ -18,7 +20,7 @@ const FilterSearchInput = ({
   className = "",
 }: FilterSearchInputProps) => {
   return (
-    <div className={`relative w-[320px] ${className}`}>
+    <div className={cn("relative w-[320px]", className)}>
       <SearchNormal1
         size={16}
         className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
@@ -28,7 +30,9 @@ const FilterSearchInput = ({
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
-        className="pl-9 h-9 rounded-full bg-[#F9FAFB] border-[#E5E7EB]"
+        className={cn(
+          `${topHeaderActionButtonClassName} w-full border-0 pl-9 pr-4 text-[11px] font-[600] tracking-[0.01em] placeholder:text-[#6B7280] focus-visible:ring-0`,
+        )}
       />
     </div>
   );
