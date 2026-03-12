@@ -229,7 +229,7 @@ const TransactionsSection = () => {
 
   return (
     <div className="space-y-5">
-      <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+      <div className="">
         <p className="text-[16px] font-[600] text-[#111827]">Summary</p>
         <p className="text-[13px] text-[#6B7280] mt-1">Gross volume and transaction counts.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mt-4">
@@ -262,7 +262,7 @@ const TransactionsSection = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
+      <div className="rounded-[14px] p-5">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div className="flex gap-2 flex-wrap">
             <FilterPillSelect
@@ -314,7 +314,7 @@ const TransactionsSection = () => {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-[14px] border border-[#ECEEF1] overflow-hidden mt-4">
+          <div className="overflow-hidden mt-4">
             <Table className="[&_th]:h-[52px] [&_th]:px-4 [&_td]:px-4 [&_td]:py-3">
               <TableHeader>
                 <TableRow>

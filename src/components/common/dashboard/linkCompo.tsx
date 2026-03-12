@@ -6,7 +6,7 @@ const LinkCompo = ({ icon, text, link, active = false, badge }: LinkCompoProps) 
   return (
     <Link
       to={link}
-      className={`flex items-center bg-none h-[36px]  gap-3 px-4 py-3 rounded-[10px] cursor-pointer transition-all ${
+      className={`flex items-center bg-none h-[36px]  gap-3 px-4 py-4 rounded-[10px] cursor-pointer transition-all ${
         active ? "bg-[#E5E7EB] text-black" : "text-black hover:bg-gray-100"
       }`}
     >

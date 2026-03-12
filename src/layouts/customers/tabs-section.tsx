@@ -233,7 +233,7 @@ const TabsSection = () => {
       <div
         className={`${
           customers.length > 0 ? "border-[1px] border-gray-200" : "mt-4"
-        } mt-4 rounded-2xl overflow-hidden`}
+        } mt-4 bg-white rounded-2xl overflow-hidden`}
       >
         {loading ? (
           <div className="p-8 text-center">
@@ -250,7 +250,7 @@ const TabsSection = () => {
           <>
             <Table className="[&_th]:h-[52px] [&_th]:px-4 [&_td]:px-4 [&_td]:py-3">
               <TableHeader>
-                <TableRow className="">
+                <TableRow className="bg-[#F4F6F8] hover:bg-[#F4F6F8]">
                   <TableHead className="h-[52px]"></TableHead>
                   <TableHead>Customer Name</TableHead>
                   <TableHead>Email</TableHead>
@@ -276,7 +276,11 @@ const TabsSection = () => {
                           alt={item.customerName}
                           className="w-[36px] h-[36px] rounded-full object-cover"
                         />
-                        <span className="text-[14px] capitalize">{item.customerName}</span>
+                        <span className="text-[14px] capitalize" title={item.customerName}>
+                          {item.customerName.length > 20
+                            ? `${item.customerName.slice(0, 20)}...`
+                            : item.customerName}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>{item.email}</TableCell>

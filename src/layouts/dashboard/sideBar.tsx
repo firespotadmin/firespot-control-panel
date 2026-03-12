@@ -28,7 +28,7 @@ const SideBar = () => {
   const can = (path: string) => canAccessRoute(role, path);
 
   return (
-    <div className="p-4 w-[240px] h-screen border-r border-gray-200 flex flex-col gap-4 overflow-y-auto">
+    <div className="p-4 w-[240px] h-screen border-r border-gray-200 flex flex-col gap-2 overflow-y-auto">
       {can("/dashboard") && (
         <LinkCompo
           icon={<ChartCircle />}
