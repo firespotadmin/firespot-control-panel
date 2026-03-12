@@ -187,7 +187,7 @@ const TabsSection = () => {
   const pageItems = getPageItems();
 
   return (
-    <div className="w-full pt-7">
+    <div className="w-full">
       <div className="pt-4 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex gap-2 flex-wrap">
           <FilterPillDate
@@ -233,7 +233,7 @@ const TabsSection = () => {
       <div
         className={`${
           customers.length > 0 ? "border-[1px] border-gray-200" : "mt-4"
-        } mt-4 rounded-2xl bg-white overflow-hidden`}
+        } mt-4 rounded-2xl overflow-hidden`}
       >
         {loading ? (
           <div className="p-8 text-center">
@@ -265,7 +265,7 @@ const TabsSection = () => {
               </TableHeader>
               <TableBody>
                 {customers.map((item) => (
-                  <TableRow key={item.id} className="bg-white font-medium">
+                  <TableRow key={item.id} className="font-medium">
                     <TableCell>
                       <img src="/verified.png" alt="verified" className="px-2" />
                     </TableCell>
@@ -296,7 +296,7 @@ const TabsSection = () => {
               </TableBody>
             </Table>
 
-            <div className="flex items-center justify-between border-t border-gray-200 px-4 py-4 bg-white rounded-b-2xl text-[14px] text-[#6B7280]">
+            <div className="flex items-center justify-between border-t border-gray-200 px-4 py-4 rounded-b-2xl text-[14px] text-[#6B7280]">
               <button
                 type="button"
                 className="flex items-center gap-2 disabled:opacity-40"

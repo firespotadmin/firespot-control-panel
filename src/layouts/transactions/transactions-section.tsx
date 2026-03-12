@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import FilterPillSelect from "@/components/common/filters/filter-pill-select";
 import FilterSearchInput from "@/components/common/filters/filter-search-input";
 import ColorBox from "@/components/common/dashboard/color-box";
@@ -37,9 +38,6 @@ const TRANSACTION_STATUSES = [
   "PAYMENT_IN_PROGRESS",
   "PAYMENT_INITIATED",
 ];
-const PLACEHOLDER_FILTER_OPTIONS = [{ value: "", label: "All time" }];
-const INDUSTRY_FILTER_OPTIONS = [{ value: "", label: "All industries" }];
-const LOCATION_FILTER_OPTIONS = [{ value: "", label: "All locations" }];
 
 const getStatusIcon = (status: string) => {
   if (status === "SUCCESS" || status === "SETTLED") {
@@ -115,6 +113,7 @@ const TransactionsSection = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -216,6 +215,18 @@ const TransactionsSection = () => {
 
   const pageItems = getPageItems();
 
+  const applyFilters = () => {
+    setPage(0);
+    setSearch(searchInput.trim());
+  };
+
+  const clearFilters = () => {
+    setPage(0);
+    setStatusFilter("");
+    setSearch("");
+    setSearchInput("");
+  };
+
   return (
     <div className="space-y-5">
       <div className="bg-white rounded-[14px] border border-[#ECEEF1] p-5">
@@ -226,7 +237,7 @@ const TransactionsSection = () => {
           color="#111827"
           count={formatLargeAmount(transactionStats.gross)}
           label="Gross Merchandise Volume"
-          // fontSize="42px"
+          fontSize="42px"
         />
         <ColorBox
           color="#111827"
@@ -255,47 +266,35 @@ const TransactionsSection = () => {
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div className="flex gap-2 flex-wrap">
             <FilterPillSelect
-              value=""
-              onChange={() => undefined}
-              options={PLACEHOLDER_FILTER_OPTIONS}
-              className="min-w-[95px]"
-            />
-            <FilterPillSelect
               value={statusFilter}
-              onChange={(value) => {
-                setPage(0);
-                setStatusFilter(value);
-              }}
+              onChange={(value) => setStatusFilter(value)}
               options={TRANSACTION_STATUSES.map((status) => ({
                 value: status,
                 label: status || "Any status",
               }))}
-              className="min-w-[115px]"
-            />
-            <FilterPillSelect
-              value=""
-              onChange={() => undefined}
-              options={INDUSTRY_FILTER_OPTIONS}
-              className="min-w-[135px]"
-            />
-            <FilterPillSelect
-              value=""
-              onChange={() => undefined}
-              options={LOCATION_FILTER_OPTIONS}
-              className="min-w-[135px]"
             />
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
             <FilterSearchInput
-              value={search}
-              onChange={(value) => {
-                setPage(0);
-                setSearch(value);
-              }}
-              placeholder="Search business names or fsID"
-              className="w-[320px]"
+              value={searchInput}
+              onChange={setSearchInput}
+              onKeyDown={(event) => event.key === "Enter" && applyFilters()}
+              placeholder="Search reference or transaction ID"
             />
+            <Button
+              variant="outline"
+              className="h-9 rounded-full border-[#E5E7EB]"
+              onClick={clearFilters}
+            >
+              Clear
+            </Button>
+            <Button
+              className="h-9 rounded-full bg-[#111827] hover:bg-[#1F2937]"
+              onClick={applyFilters}
+            >
+              Apply
+            </Button>
           </div>
         </div>
 
